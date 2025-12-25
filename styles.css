@@ -1,0 +1,122 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #1e1e1e;
+  color: #cccccc;
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* トップバー */
+#toolbar {
+  height: 40px;
+  background-color: #2d2d30;
+  border-bottom: 1px solid #3e3e42;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+}
+
+#toolbar .title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #cccccc;
+  margin-right: auto;
+}
+
+#toolbar button {
+  background-color: #0e639c;
+  color: #ffffff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 2px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#toolbar button:hover {
+  background-color: #1177bb;
+}
+
+#toolbar button:active {
+  background-color: #0d5a8f;
+}
+
+/* メインコンテンツ */
+#main-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* 左側エディター */
+#editor-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #3e3e42;
+}
+
+#editor {
+  flex: 1;
+}
+
+/* 右側プレビュー/デバッグ */
+#preview-pane {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  background-color: #252526;
+}
+
+#preview-top {
+  flex: 0 0 25%;
+  border-bottom: 1px solid #3e3e42;
+  display: flex;
+  flex-direction: column;
+}
+
+#preview-bottom {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.pane-header {
+  height: 35px;
+  background-color: #2d2d30;
+  border-bottom: 1px solid #3e3e42;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 13px;
+  color: #cccccc;
+}
+
+.pane-content {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  color: #cccccc;
+}
+
+.placeholder-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #6a6a6a;
+  font-size: 14px;
+}
