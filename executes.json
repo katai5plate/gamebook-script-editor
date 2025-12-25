@@ -1,0 +1,33 @@
+[
+  {
+    "name": "SET_BG",
+    "args": [
+      {
+        "require": true,
+        "name": "name",
+        "type": "text",
+        "presets": ["cave", "forest"]
+      }
+    ]
+  },
+  {
+    "name": "PLAY_SE",
+    "args": [
+      {
+        "require": true,
+        "name": "name",
+        "type": "text",
+        "presets": ["finish"]
+      },
+      {
+        "name": "volume",
+        "type": "text",
+        "presets": ["small", "normal", "big"]
+      }
+    ]
+  },
+  {
+    "name": "SAVE_CLEAR_TIME",
+    "args": [{ "name": "wasHighScore", "type": "flag" }]
+  }
+]
