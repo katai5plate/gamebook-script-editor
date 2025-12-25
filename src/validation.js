@@ -40,7 +40,6 @@ function validateScript(text) {
     });
   }
 
-
   function validateCommandArgs(lineNum, originalLine, command, argsText) {
     const rule = SYNTAX_RULES[command];
     if (!rule) return;
@@ -244,7 +243,7 @@ function validateScript(text) {
     const line = lines[i].trim();
     const originalLine = lines[i];
 
-    const pageMatch = line.match(/^PAGE @([a-zA-Z_]+)/);
+    const pageMatch = line.match(/^PAGE @([a-zA-Z0-9_]+)/);
     if (pageMatch && pageMatch[1]) {
       const pageName = pageMatch[1];
       if (declaredPages.has(pageName)) {
@@ -260,7 +259,7 @@ function validateScript(text) {
       declaredPages.add(pageName);
     }
 
-    const flagMatch = line.match(/FLAG \$([a-zA-Z_]+)/);
+    const flagMatch = line.match(/FLAG \$([a-zA-Z0-9_]+)/);
     if (flagMatch && flagMatch[1]) {
       const flagName = flagMatch[1];
       if (declaredFlags.has(flagName)) {
@@ -476,7 +475,8 @@ function validateScript(text) {
       }
 
       const effectPatterns = [/to-true:/, /to-false:/];
-      const isValidEffectContext = line.startsWith("IS") || line.startsWith("TO");
+      const isValidEffectContext =
+        line.startsWith("IS") || line.startsWith("TO");
 
       for (const pattern of effectPatterns) {
         const effectMatch = originalLine.match(pattern);

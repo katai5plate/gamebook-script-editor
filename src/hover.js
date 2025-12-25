@@ -235,7 +235,7 @@ export function createHoverProvider() {
       // ページ参照をチェック
       if (!lineContent.trim().startsWith("PAGE")) {
         const pageResult = findElementAtCursor(
-          /@([a-zA-Z_]+)/g,
+          /@([a-zA-Z0-9_]+)/g,
           lineContent,
           cursorColumn
         );
@@ -259,7 +259,7 @@ export function createHoverProvider() {
       // フラグ参照をチェック
       if (!lineContent.trim().startsWith("FLAG")) {
         const flagResult = findElementAtCursor(
-          /\$([a-zA-Z_]+)/g,
+          /\$([a-zA-Z0-9_]+)/g,
           lineContent,
           cursorColumn
         );

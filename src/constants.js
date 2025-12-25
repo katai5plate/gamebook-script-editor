@@ -44,8 +44,8 @@ export const SYNTAX_RULES = {
 
 // 引数型の検証パターン
 export const ARG_TYPE_PATTERNS = {
-  page: /^@([a-zA-Z_]+|\^(HERE|BACK))$/,
-  flag: /^\$[a-zA-Z_]+$/,
+  page: /^@([a-zA-Z0-9_]+|\^(HERE|BACK))$/,
+  flag: /^\$[a-zA-Z0-9_]+$/,
   text: /^".*"$/,
   time: /^time:(too_short|short|normal|long|too_long)$/,
   text_or_special: /^("|\/SAME|\/CANCEL|\/TIMEUP)/,
@@ -163,13 +163,15 @@ export const HOVER_DOCS = {
   },
   "true:": {
     title: "true:",
-    description: "指定されたフラグ（複数可）がすべて真の場合に条件を満たします。",
+    description:
+      "指定されたフラグ（複数可）がすべて真の場合に条件を満たします。",
     syntax: "true:$flag1,$flag2,...",
     example: "true:$hasKey,$hasTorch> 鍵と松明を両方持っている",
   },
   "false:": {
     title: "false:",
-    description: "指定されたフラグ（複数可）がすべて偽の場合に条件を満たします。",
+    description:
+      "指定されたフラグ（複数可）がすべて偽の場合に条件を満たします。",
     syntax: "false:$flag1,$flag2,...",
     example: "false:$hasKey,$hasTorch> 鍵も松明も持っていない",
   },
@@ -239,40 +241,6 @@ export const HOVER_DOCS = {
   },
 };
 
-// キーワード一覧（補完用）
-export const KEYWORDS = [
-  // コマンド
-  "PAGE",
-  "CHOICE",
-  "IS",
-  "EXEC",
-  "TO",
-  "RETURN",
-  "BACK",
-  "DEFINE",
-  "FLAG",
-  // 特殊キーワード
-  "/SAME",
-  "/CANCEL",
-  "/TIMEUP",
-  // 条件
-  "mode:not",
-  "mode:",
-  "true:",
-  "false:",
-  "true-or:",
-  "false-or:",
-  // 効果
-  "to-true:",
-  "to-false:",
-  // 時間条件
-  "time:too_short",
-  "time:short",
-  "time:normal",
-  "time:long",
-  "time:too_long",
-];
-
 // 時間オプション一覧
 export const TIME_OPTIONS = [
   "too_short",
@@ -282,14 +250,46 @@ export const TIME_OPTIONS = [
   "too_long",
 ];
 
+export const KEYWORD_MAP = {
+  // コマンド
+  COMMAND: [
+    "PAGE",
+    "CHOICE",
+    "IS",
+    "EXEC",
+    "TO",
+    "RETURN",
+    "BACK",
+    "DEFINE",
+    "FLAG",
+  ],
+  // 特殊キーワード
+  SPECIAL: ["/SAME", "/CANCEL", "/TIMEUP"],
+  // 条件
+  CONDITION: ["mode:not", "mode:", "true:", "false:", "true-or:", "false-or:"],
+  // 効果
+  EFFECT: ["to-true:", "to-false:"],
+  // 時間条件
+  TIME: TIME_OPTIONS.map((opt) => `time:${opt}`),
+};
+
+// キーワード一覧（補完用）
+export const KEYWORDS = [
+  ...KEYWORD_MAP.COMMAND,
+  ...KEYWORD_MAP.SPECIAL,
+  ...KEYWORD_MAP.CONDITION,
+  ...KEYWORD_MAP.EFFECT,
+  ...KEYWORD_MAP.TIME,
+];
+
 // 特殊選択肢一覧
 export const SPECIAL_CHOICES = ["/SAME", "/CANCEL", "/TIMEUP"];
 
 // 共通正規表現パターン
 export const REGEX_PATTERNS = {
-  pageRef: /@([a-zA-Z_]+)/g,
-  flagRef: /\$([a-zA-Z_]+)/g,
-  execCmd: /#([A-Z_]+)/g,
+  pageRef: /@([a-zA-Z0-9_]+)/g,
+  flagRef: /\$([a-zA-Z0-9_]+)/g,
+  execCmd: /#([A-Z0-9_]+)/g,
   timeSpec: /time:(too_short|short|normal|long|too_long)/,
   specialChoice: /\/(SAME|CANCEL|TIMEUP)/,
   metaCode: /@\^(HERE|BACK)/,

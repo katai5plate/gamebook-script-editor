@@ -1,0 +1,221 @@
+{
+  "name": "main",
+  "flagNames": ["key", "wasHighScore"],
+  "pageNames": ["cave", "forest", "win", "locked"],
+  "pages": {
+    "cave": [
+      {
+        "type": "exec",
+        "func": "SET_BG",
+        "args": [
+          {
+            "type": "text",
+            "value": "cave"
+          }
+        ]
+      },
+      {
+        "type": "line",
+        "isFirst": true,
+        "conditions": [],
+        "text": "暗い洞窟。"
+      },
+      {
+        "type": "line",
+        "isFirst": false,
+        "conditions": [],
+        "text": "鍵のかかった扉がある。"
+      },
+      {
+        "type": "choice",
+        "time": null,
+        "options": [
+          {
+            "text": "森へ出る",
+            "page": "forest",
+            "noMove": false,
+            "toBack": false,
+            "conditions": [],
+            "effects": []
+          },
+          {
+            "text": "扉を開ける",
+            "page": "win",
+            "noMove": false,
+            "toBack": false,
+            "conditions": [
+              {
+                "formula": "true",
+                "flags": ["key"]
+              }
+            ],
+            "effects": []
+          },
+          {
+            "text": "扉を開ける",
+            "page": "locked",
+            "noMove": false,
+            "toBack": false,
+            "conditions": [
+              {
+                "formula": "false",
+                "flags": ["key"]
+              }
+            ],
+            "effects": []
+          }
+        ]
+      },
+      {
+        "type": "page-end",
+        "mode": "return"
+      }
+    ],
+    "forest": [
+      {
+        "type": "exec",
+        "func": "SET_BG",
+        "args": [
+          {
+            "type": "text",
+            "value": "forest"
+          }
+        ]
+      },
+      {
+        "type": "line",
+        "isFirst": true,
+        "conditions": [],
+        "text": "森。"
+      },
+      {
+        "type": "line",
+        "isFirst": false,
+        "conditions": [
+          {
+            "formula": "false",
+            "flags": ["key"]
+          }
+        ],
+        "text": "地面に小さな鍵。"
+      },
+      {
+        "type": "choice",
+        "time": "short",
+        "options": [
+          {
+            "text": "鍵を拾う",
+            "page": null,
+            "noMove": true,
+            "toBack": false,
+            "conditions": [
+              {
+                "formula": "false",
+                "flags": ["key"]
+              }
+            ],
+            "effects": [
+              {
+                "formula": "to-true",
+                "flags": ["key"]
+              }
+            ]
+          },
+          {
+            "text": "洞窟へ戻る",
+            "page": null,
+            "noMove": false,
+            "toBack": true,
+            "conditions": [],
+            "effects": []
+          }
+        ]
+      },
+      {
+        "type": "page-end",
+        "mode": "return"
+      }
+    ],
+    "locked": [
+      {
+        "type": "line",
+        "isFirst": true,
+        "conditions": [],
+        "text": "鍵がない。"
+      },
+      {
+        "type": "line",
+        "isFirst": false,
+        "conditions": [],
+        "text": "押しても引いても開かなかった。"
+      },
+      {
+        "type": "page-end",
+        "mode": "back"
+      }
+    ],
+    "win": [
+      {
+        "type": "line",
+        "isFirst": true,
+        "conditions": [],
+        "text": "鍵が回った。脱出成功！"
+      },
+      {
+        "type": "line",
+        "isFirst": false,
+        "conditions": [],
+        "text": "ゲームクリア！"
+      },
+      {
+        "type": "exec",
+        "func": "PLAY_SE",
+        "args": [
+          {
+            "type": "text",
+            "value": "finish"
+          }
+        ]
+      },
+      {
+        "type": "exec",
+        "func": "SAVE_CLEAR_TIME",
+        "args": [
+          {
+            "type": "flag",
+            "value": "wasHighScore"
+          }
+        ]
+      },
+      {
+        "type": "line",
+        "isFirst": true,
+        "conditions": [
+          {
+            "formula": "true",
+            "flags": ["wasHighScore"]
+          }
+        ],
+        "text": "クリア時間ハイスコア更新！"
+      },
+      {
+        "type": "line",
+        "isFirst": false,
+        "conditions": [],
+        "text": "おめでとう！"
+      },
+      {
+        "page": null,
+        "noMove": true,
+        "toBack": false,
+        "conditions": [],
+        "effects": [
+          {
+            "formula": "to-false",
+            "flags": ["key", "wasHighScore"]
+          }
+        ]
+      }
+    ]
+  }
+}

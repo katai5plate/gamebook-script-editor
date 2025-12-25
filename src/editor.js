@@ -3,6 +3,7 @@ import { validateScript } from "./validation.js";
 import { createHoverProvider } from "./hover.js";
 import { gamebookLanguageDefinition } from "./language.js";
 import { gamebookThemeDefinition } from "./theme.js";
+import { parser } from "./parser.js";
 
 let editor; // グローバルスコープで宣言
 
@@ -45,7 +46,7 @@ PAGE @forest
 EXEC #SET_BG "forest"
 > 森。
 false:$key- 地面に小さな鍵。
-CHOICE
+CHOICE time:short
   IS "鍵を拾う" @^HERE false:$key to-true:$key
   IS "洞窟へ戻る" @^BACK
 RETURN
@@ -61,7 +62,8 @@ PAGE @win
 EXEC #PLAY_SE "finish"
 EXEC #SAVE_CLEAR_TIME $wasHighScore
 true:$wasHighScore> クリア時間ハイスコア更新！
-- おめでとう！`,
+- おめでとう！
+TO @^HERE to-false:$key,$wasHighScore`,
     language: "gamebook",
     theme: "gamebook-theme",
     minimap: { enabled: true },
@@ -71,6 +73,7 @@ true:$wasHighScore> クリア時間ハイスコア更新！
     automaticLayout: true, // 自動レイアウト調整
   });
   window.editor = editor;
+  console.log([parser]);
 
   // 補完の定義
   monaco.languages.registerCompletionItemProvider(
