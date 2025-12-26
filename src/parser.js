@@ -45,35 +45,52 @@ export const parseScript = (script) => {
   const tokenized = script
     .split("\n")
     .map((line) => {
-      const trimmed = line.trim().replace(/\/\/.*?$/, "");
+      const trimmed = line.trim();
+      // テキスト行かどうかを先に判定（コメント除去の前に）
       const [, isMessage] = trimmed.match(/^([>-])/) ?? [];
       const [, isMessageWithCondition] =
         trimmed.match(REGEX_PATTERNS.messageWithConditionPattern) ?? [];
+
+      // テキスト行の場合はコメントを除去しない
       if (isMessage || isMessageWithCondition) {
         const [left, right = ""] = trimmed.split(/[>-]\s/);
         return [
           isMessage || isMessageWithCondition,
           ...tokenizeLine(left),
-          `"${right}`,
+          `"${right}`, // メッセージ部分は " で始まるので text として扱われる
         ];
       }
-      return tokenizeLine(trimmed);
+
+      // テキスト行以外の場合のみコメントを除去
+      const withoutComment = trimmed.replace(/\/\/.*?$/, "");
+      return tokenizeLine(withoutComment);
     })
     .filter((tokens) => tokens.length)
-    .map((tokens) =>
-      tokens.map((token) => {
+    .map((tokens, lineIndex) => {
+      // テキスト行かどうかを判定（最初のトークンが > か - の場合）
+      const isTextLine = typeof tokens[0] === 'string' && [">", "-"].includes(tokens[0]);
+      return tokens.map((token, tokenIndex) => {
+        // テキスト行のメッセージ部分（" で始まるトークン）内の要素はスキップ
+        const isInMessage = isTextLine && typeof token === 'string' && token.startsWith('"') && tokenIndex === tokens.length - 1;
+
         switch (token[0]) {
           case "@": {
             const value = token.slice(1);
             if (value[0] === "^") {
               return { type: "address", value: value.slice(1) };
             }
-            pageNames.add(value);
+            // メッセージ内のページ参照はpageNamesに追加しない
+            if (!isInMessage) {
+              pageNames.add(value);
+            }
             return { type: "page", value };
           }
           case "$": {
             const value = token.slice(1);
-            flagNames.add(value);
+            // メッセージ内のフラグ参照はflagNamesに追加しない
+            if (!isInMessage) {
+              flagNames.add(value);
+            }
             return { type: "flag", value };
           }
           case "/": {
@@ -117,8 +134,8 @@ export const parseScript = (script) => {
             return { type: "other", value: token };
           }
         }
-      })
-    );
+      });
+    });
 
   // DEFINE/PAGE行か末尾かで捜査してページを取得
   const tokenizedPages = [];

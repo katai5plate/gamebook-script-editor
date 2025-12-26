@@ -379,14 +379,36 @@ function validateScriptCore(text, options = {}) {
       }
     }
 
-    // ページ参照チェック
-    const pageRefs = [...originalLine.matchAll(REGEX_PATTERNS.pageRef)];
+    // コメント行はスキップ
+    if (line.startsWith("//")) {
+      continue;
+    }
+
+    // テキスト行（メッセージ）かどうかを判定
+    // テキスト行の場合、条件部分とメッセージ部分を分離
+    let checkTarget = originalLine;
+    const textLineMatch = originalLine.match(/^(\s*)(.+?)([>\-])\s+(.*)$/);
+    if (textLineMatch) {
+      // テキスト行の場合、条件部分（[>\-]の前）のみをチェック対象にする
+      const [, indent, conditionPart, marker] = textLineMatch;
+      checkTarget = indent + conditionPart + marker; // メッセージ部分を除外
+    } else {
+      // [>\-]が行頭にある場合（条件なし）
+      const simpleTextLineMatch = originalLine.match(/^(\s*)([>\-])\s+(.*)$/);
+      if (simpleTextLineMatch) {
+        const [, indent, marker] = simpleTextLineMatch;
+        checkTarget = indent + marker; // メッセージ部分を完全に除外
+      }
+    }
+
+    // ページ参照チェック（メッセージ部分は除外）
+    const pageRefs = [...checkTarget.matchAll(REGEX_PATTERNS.pageRef)];
     for (const match of pageRefs) {
       if (!match || !match[1] || typeof match.index !== "number") continue;
       if (!line.startsWith("PAGE")) {
         const pageName = match[1];
         const beforeAt =
-          match.index > 0 ? originalLine.charAt(match.index - 1) : "";
+          match.index > 0 ? checkTarget.charAt(match.index - 1) : "";
         if (beforeAt === "^") continue;
 
         if (!declaredPages.has(pageName)) {
@@ -416,8 +438,8 @@ function validateScriptCore(text, options = {}) {
       }
     }
 
-    // フラグ参照チェック
-    const flagRefs = [...originalLine.matchAll(REGEX_PATTERNS.flagRef)];
+    // フラグ参照チェック（メッセージ部分は除外）
+    const flagRefs = [...checkTarget.matchAll(REGEX_PATTERNS.flagRef)];
     for (const match of flagRefs) {
       if (!match || !match[1] || typeof match.index !== "number") continue;
       if (!line.startsWith("FLAG")) {
@@ -520,12 +542,13 @@ function validateScriptCore(text, options = {}) {
         line.match(
           /^(true:|false:|true-or:|false-or:|to-true:|to-false:)/
         ) ||
-        originalLine.match(/^[>\-]/);
+        checkTarget.match(/[>\-]/);
 
+      // メッセージ部分を除外してチェック
       for (const pattern of conditionPatterns) {
-        const condMatch = originalLine.match(pattern);
+        const condMatch = checkTarget.match(pattern);
         if (condMatch && !isValidConditionContext) {
-          const condPos = originalLine.indexOf(condMatch[0]);
+          const condPos = checkTarget.indexOf(condMatch[0]);
           addError(
             i + 1,
             condPos + 1,
@@ -540,10 +563,11 @@ function validateScriptCore(text, options = {}) {
       const isValidEffectContext =
         line.startsWith("IS") || line.startsWith("TO");
 
+      // メッセージ部分を除外してチェック
       for (const pattern of effectPatterns) {
-        const effectMatch = originalLine.match(pattern);
+        const effectMatch = checkTarget.match(pattern);
         if (effectMatch && !isValidEffectContext) {
-          const effectPos = originalLine.indexOf(effectMatch[0]);
+          const effectPos = checkTarget.indexOf(effectMatch[0]);
           addError(
             i + 1,
             effectPos + 1,

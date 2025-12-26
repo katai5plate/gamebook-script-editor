@@ -1,0 +1,11 @@
+DEFINE "test"
+  FLAG $a
+
+PAGE @x
+// 「IS "鍵を拾う" @^HERE false:$key to-true:$key」がメッセージとして解釈されなければならない。
+> IS "鍵を拾う" @^HERE false:$key to-true:$key
+- IS "鍵を拾う" @^HERE false:$key to-true:$key
+true-or:$a> IS "鍵を拾う" @^HERE false:$key to-true:$key
+true-or:$a- IS "鍵を拾う" @^HERE false:$key to-true:$key
+true-or:$a> IS "鍵を拾う" @^HERE false:$key to-true:$key // これもコメントではなくメッセージ
+true-or:$a- IS "鍵を拾う" @^HERE false:$key to-true:$key // これもコメントではなくメッセージ

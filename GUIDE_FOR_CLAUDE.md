@@ -26,16 +26,27 @@ gamebook-script-editor/
 ├── GUIDE_FOR_CLAUDE.md     # このファイル（開発者向けガイド）
 ├── README.md               # プロジェクト概要
 ├── cli/
-│   └── validate.js         # CLI用バリデーションツール（CI/CD対応）
+│   ├── validate.js         # CLI用バリデーションツール（CI/CD対応）
+│   ├── parse.js            # CLI用パーサー
+│   └── capture-syntax.js   # シンタックスハイライトのスナップショット取得ツール
 ├── spec/
-│   └── advance.gbs         # テストスクリプト（全機能網羅）
+│   ├── advance.gbs         # テストスクリプト（全機能網羅）
+│   ├── basic.gbs           # 基本機能テストスクリプト
+│   ├── test.gbs            # テストスクリプト
+│   └── test2.gbs           # テストスクリプト
+├── snapshot/               # シンタックスハイライトのスナップショット（.gitignore）
+│   ├── advance.view        # advance.gbsのレンダリング結果
+│   ├── basic.view          # basic.gbsのレンダリング結果
+│   ├── test.view           # test.gbsのレンダリング結果
+│   └── test2.view          # test2.gbsのレンダリング結果
 └── src/
     ├── constants.js        # 定数・構文定義（★最重要）
     ├── language.js         # Monaco言語定義（シンタックスハイライト）
     ├── theme.js            # エディタテーマ定義
     ├── completion.js       # 補完プロバイダー
     ├── validation.js       # バリデーションロジック（Browser + CLI対応）
-    └── hover.js            # ホバープロバイダー
+    ├── hover.js            # ホバープロバイダー
+    └── parser.js           # パーサー
 ```
 
 ---
@@ -122,7 +133,7 @@ export const SYNTAX_RULES = {
 
 バリデーションロジック。`SYNTAX_RULES` と `ARG_TYPE_PATTERNS` を使って構文検証を行います。
 
-**重要**: CLI環境（Node.js）とブラウザ環境の両方で動作するように設計されています。
+**重要**: CLI 環境（Node.js）とブラウザ環境の両方で動作するように設計されています。
 
 #### 主要な機能
 
@@ -131,18 +142,19 @@ export const SYNTAX_RULES = {
 - 重複宣言チェック
 - 前行要件チェック
 - 不正なコンマ連結検出（例: `true:$a,true:$b` → エラー）
-- CLI/Browser環境の自動判定
+- CLI/Browser 環境の自動判定
 
 #### 重要な関数
 
 - `validateScriptCore(text, options)` - コア検証関数（環境非依存）
-- `validateScript(text)` - Monaco形式ラッパー（Browser用）
+- `validateScript(text)` - Monaco 形式ラッパー（Browser 用）
 - `validateCommandArgs()` - 汎用引数検証
 - `parseArgs()` - 引数パース（クォート考慮）
 
-#### Severity定数
+#### Severity 定数
 
-Monaco Editor互換の数値定数（マジックナンバー）:
+Monaco Editor 互換の数値定数（マジックナンバー）:
+
 - `Error: 8` - 構文エラー
 - `Warning: 4` - 警告
 - `Info: 2` - 情報
@@ -225,7 +237,7 @@ Monaco Editor の言語定義（トークナイザー）。シンタックスハ
 
 ### 8. `cli/validate.js`
 
-Node.js環境でスクリプトをバリデーションするCLIツール。CI/CD統合用。
+Node.js 環境でスクリプトをバリデーションする CLI ツール。CI/CD 統合用。
 
 ```bash
 # 使い方
@@ -237,13 +249,67 @@ node cli/validate.js *.gbs      # 複数ファイルを検証
 #### 特徴
 
 - カラー出力（エラー=赤、警告=黄、成功=緑）
-- エラーがあれば終了コード1で終了（CI/CD対応）
+- エラーがあれば終了コード 1 で終了（CI/CD 対応）
 - `executes.json`を同期的に読み込み
 - `validateScriptCore()`を使用（環境非依存）
 
 ---
 
-### 9. `spec/advance.gbs`
+### 9. `cli/parse.js`
+
+Node.js 環境でスクリプトをパースする CLI ツール。
+
+```bash
+# 使い方
+npm run parse                    # spec/advance.gbs をパース
+npm run parse path/to/file.gbs  # 指定ファイルをパース
+npm run parse path/to/file.gbs --json  # JSON 出力
+node cli/parse.js *.gbs          # 複数ファイルをパース
+```
+
+#### 出力
+
+パース結果を JSON 形式で標準出力に出力します。
+
+---
+
+### 10. `cli/capture-syntax.js`
+
+Monaco Editor のシンタックスハイライトのレンダリング結果をスナップショットとして保存するツール。
+
+```bash
+# 使い方
+npm run capture-syntax
+```
+
+#### 仕組み
+
+1. 簡易 HTTP サーバーを起動（ランダムポート）
+2. Puppeteer で index.html を開く
+3. Monaco Editor が初期化されるのを待つ
+4. spec/\*.gbs ファイルを順に読み込み、Monaco Editor に設定
+5. レンダリング結果の HTML（.view-lines）を取得
+6. フォーマットして snapshot/\*.view ファイルとして保存
+7. サーバーをクローズ
+
+#### 出力
+
+- `snapshot/advance.view` - advance.gbs のレンダリング結果
+- `snapshot/basic.view` - basic.gbs のレンダリング結果
+- `snapshot/test.view` - test.gbs のレンダリング結果
+- `snapshot/test2.view` - test2.gbs のレンダリング結果
+
+#### 用途
+
+シンタックスハイライトの実装（`src/language.js`や`src/theme.js`）を変更した際に、実際のレンダリング結果を確認するために使用します。Claude Code にスナップショットファイルを見せることで、意図した通りにハイライトされているかをデバッグできます。
+
+#### 依存関係
+
+- puppeteer（Chromium ベースのヘッドレスブラウザ）
+
+---
+
+### 11. `spec/advance.gbs`
 
 全言語機能を網羅したテストスクリプト。バリデーション機能の動作確認用。
 
@@ -334,6 +400,7 @@ npm run lint spec/advance.gbs
 
 4. **色が正しく表示されない**
    → `src/language.js` のトークン分類と `src/theme.js` の色定義を確認
+   → `npm run capture-syntax` を実行してスナップショットを確認
 
 ---
 
@@ -407,6 +474,25 @@ COMMAND: {
   example: "COMMAND @example true:$flag to-true:$result"
 }
 ```
+
+---
+
+### 5. シンタックスハイライトのデバッグ
+
+`src/language.js`や`src/theme.js`を変更した後、実際のレンダリング結果を確認します。
+
+```bash
+npm run capture-syntax
+```
+
+`snapshot/`ディレクトリに生成された`.view`ファイルを Claude Code に見せて、意図した通りにハイライトされているか確認します。
+
+#### デバッグフロー
+
+1. `src/language.js`または`src/theme.js`を修正
+2. `npm run capture-syntax`を実行
+3. `snapshot/*.view`ファイルを確認
+4. 問題があれば修正して再度実行
 
 ---
 

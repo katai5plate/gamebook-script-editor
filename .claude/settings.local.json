@@ -4,7 +4,11 @@
       "Bash(node:*)",
       "Bash(npm run lint:*)",
       "Bash(cat:*)",
-      "Bash(npm run parse:*)"
+      "Bash(npm run parse:*)",
+      "Bash(ls:*)",
+      "Bash(npm run parse:json:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run capture-syntax:*)"
     ]
   }
 }

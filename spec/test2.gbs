@@ -1,0 +1,14 @@
+DEFINE "test2"
+  FLAG $a $key
+
+PAGE @start
+> IS "鍵を拾う" @^HERE false:$key to-true:$key
+- IS "鍵を拾う" @^HERE false:$key to-true:$key
+true-or:$a> IS "鍵を拾う" @^HERE false:$key to-true:$key
+true-or:$a- IS "鍵を拾う" @^HERE false:$key to-true:$key
+CHOICE
+  IS "次へ" @next
+
+PAGE @next
+> 次のページです。
+END

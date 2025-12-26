@@ -6,6 +6,7 @@
   "scripts": {
     "lint": "node cli/validate.js",
     "parse": "node cli/parse.js",
+    "capture-syntax": "node cli/capture-syntax.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -14,5 +15,8 @@
     "monaco"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "puppeteer": "^24.34.0"
+  }
 }
