@@ -303,16 +303,12 @@ IS "戻る" @^BACK
 - `true-or:$flag1,$flag2,$flag3` - いずれかが真
 - `false-or:$flag1,$flag2,$flag3` - いずれかが偽
 
-#### 条件の反転
-
-- `mode:not true:$flag` - フラグが真**でない**場合
-
 **例**:
 
 ```
 > 扉を開けるには3つの鍵が必要だ。
 true-or:$key1,$key2,$key3> 鍵を1つ以上持っている。
-mode:not true:$key1,$key2,$key3> 鍵を1つも持っていない。
+false-or:$key1,$key2,$key3> 鍵を1つも持っていない。
 false:$key1> 赤い鍵を持っていない。
 ```
 
@@ -327,6 +323,110 @@ false:$key1> 赤い鍵を持っていない。
 
 ```
 IS "宝箱を開ける" @^HERE to-true:$openedChest,$hasGold
+```
+
+---
+
+### 複雑な条件式の例
+
+ゲームブックでよく使われる複雑な条件パターン。
+
+#### パターン1: アイテムの組み合わせチェック
+
+```
+// 「剣と盾の両方を持っている」
+true:$hasSword,$hasShield> 完全装備で戦える！
+
+// 「剣か盾のどちらかを持っている」
+true-or:$hasSword,$hasShield> 武器がある。
+
+// 「剣も盾も持っていない」
+false-or:$hasSword,$hasShield> 武器がない...
+```
+
+#### パターン2: フラグの排他的チェック
+
+```
+// 「善ルートを選んでいて、悪ルートを選んでいない」
+true:$goodPath false:$evilPath> あなたは正しい道を歩んでいる。
+
+// 「悪ルートを選んでいて、善ルートを選んでいない」
+true:$evilPath false:$goodPath> あなたは暗黒面に堕ちた。
+
+// 「どちらも選んでいない」
+false:$goodPath,$evilPath> まだ運命は決まっていない。
+```
+
+#### パターン3: 複数条件の組み合わせ
+
+```
+// 「鍵を持っていて、松明に火が灯っている」
+true:$hasKey,$torchLit> 暗闇の扉を開けられる。
+
+// 「鍵か地図のどちらかを持っていて、罠を解除済み」
+true-or:$hasKey,$hasMap true:$trapDisabled> 安全に進める。
+
+// 「3つのアイテムすべてを持っている」
+true:$item1,$item2,$item3> 儀式の準備が整った。
+```
+
+#### パターン4: 進行度チェック
+
+```
+// 「3つのボスのうち、少なくとも1体を倒している」
+true-or:$boss1Defeated,$boss2Defeated,$boss3Defeated> 実力を証明した。
+
+// 「すべてのボスを倒している」
+true:$boss1Defeated,$boss2Defeated,$boss3Defeated> 伝説の勇者となった！
+
+// 「まだボスを1体も倒していない」
+false-or:$boss1Defeated,$boss2Defeated,$boss3Defeated> 修行が必要だ。
+```
+
+#### パターン5: 条件付き選択肢
+
+```
+CHOICE
+  // 「鍵を持っていない場合のみ表示」
+  IS "鍵を拾う" @^HERE false:$hasKey to-true:$hasKey
+
+  // 「鍵を持っている場合のみ表示」
+  IS "扉を開ける" @next_room true:$hasKey
+
+  // 「鍵と松明の両方を持っている場合のみ表示」
+  IS "地下室へ降りる" @basement true:$hasKey,$torchLit
+
+  // 「武器を何も持っていない場合のみ表示」
+  IS "素手で戦う" @fight false-or:$hasSword,$hasSpear,$hasBow
+```
+
+#### パターン6: 条件付きページ遷移
+
+```
+PAGE @checkpoint
+> 分かれ道に立っている。
+// 「鍵を持っていたら自動的に右の道へ」
+TO @right_path true:$hasKey
+// 「地図を持っていたら自動的に左の道へ」
+TO @left_path true:$hasMap
+// どちらも持っていなければ選択肢を表示
+CHOICE
+  IS "右の道" @right_path
+  IS "左の道" @left_path
+```
+
+#### パターン7: 複数効果の組み合わせ
+
+```
+CHOICE
+  // 「アイテムを拾って、複数のフラグを立てる」
+  IS "宝箱を開ける" @^HERE to-true:$openedChest,$hasGold,$foundTreasure
+
+  // 「アイテムを使って、複数のフラグを消す」
+  IS "魔法薬を使う" @next to-false:$hasPotion,$isPoisoned,$isWeak
+
+  // 「条件付きで複数効果」
+  IS "秘密の儀式" @ritual true:$hasCandle,$hasBook to-true:$ritualComplete to-false:$hasCandle,$hasBook
 ```
 
 ---
@@ -419,9 +519,9 @@ CHOICE
 
 PAGE @fight_result
 true-or:$hasWeapon,$hasArmor> 装備のおかげで勝利した！
-mode:not true-or:$hasWeapon,$hasArmor> 装備がなく敗北した...
+false-or:$hasWeapon,$hasArmor> 装備がなく敗北した...
 TO @victory true-or:$hasWeapon,$hasArmor
-TO @defeat mode:not true-or:$hasWeapon,$hasArmor
+TO @defeat false-or:$hasWeapon,$hasArmor
 ```
 
 ---

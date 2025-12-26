@@ -20,15 +20,21 @@
 ```
 gamebook-script-editor/
 ├── index.html              # エディタのメインHTML
+├── package.json            # npm設定（ES modules、lintスクリプト）
 ├── executes.json           # エンジン側コマンド定義
 ├── REFERENCE.md            # シナリオライター向けリファレンス
-├── README.md               # 開発者向けREADME
+├── GUIDE_FOR_CLAUDE.md     # このファイル（開発者向けガイド）
+├── README.md               # プロジェクト概要
+├── cli/
+│   └── validate.js         # CLI用バリデーションツール（CI/CD対応）
+├── spec/
+│   └── advance.gbs         # テストスクリプト（全機能網羅）
 └── src/
     ├── constants.js        # 定数・構文定義（★最重要）
     ├── language.js         # Monaco言語定義（シンタックスハイライト）
     ├── theme.js            # エディタテーマ定義
     ├── completion.js       # 補完プロバイダー
-    ├── validation.js       # バリデーションロジック
+    ├── validation.js       # バリデーションロジック（Browser + CLI対応）
     └── hover.js            # ホバープロバイダー
 ```
 
@@ -116,19 +122,31 @@ export const SYNTAX_RULES = {
 
 バリデーションロジック。`SYNTAX_RULES` と `ARG_TYPE_PATTERNS` を使って構文検証を行います。
 
+**重要**: CLI環境（Node.js）とブラウザ環境の両方で動作するように設計されています。
+
 #### 主要な機能
 
 - コマンド引数の型チェック
 - ページ/フラグの未定義参照チェック
 - 重複宣言チェック
 - 前行要件チェック
-- コメント除去処理
+- 不正なコンマ連結検出（例: `true:$a,true:$b` → エラー）
+- CLI/Browser環境の自動判定
 
 #### 重要な関数
 
-- `validateScript(text)` - メイン関数
+- `validateScriptCore(text, options)` - コア検証関数（環境非依存）
+- `validateScript(text)` - Monaco形式ラッパー（Browser用）
 - `validateCommandArgs()` - 汎用引数検証
 - `parseArgs()` - 引数パース（クォート考慮）
+
+#### Severity定数
+
+Monaco Editor互換の数値定数（マジックナンバー）:
+- `Error: 8` - 構文エラー
+- `Warning: 4` - 警告
+- `Info: 2` - 情報
+- `Hint: 1` - ヒント
 
 ---
 
@@ -162,7 +180,7 @@ export const SYNTAX_RULES = {
 - コマンドキーワード（`HOVER_DOCS` から取得）
 - 特殊キーワード（`/SAME`, `/CANCEL`, `/TIMEUP`）
 - メタコード（`@^HERE`, `@^BACK`）
-- 条件・効果キーワード（`mode:not`, `true:`, `to-true:` など）
+- 条件・効果キーワード（`true:`, `false:`, `true-or:`, `false-or:`, `to-true:`, `to-false:`）
 - 時間指定（`time:short` など）
 - EXEC コマンド（`executes.json` から引数情報を表示）
 - ページ/フラグ参照
@@ -202,6 +220,47 @@ Monaco Editor の言語定義（トークナイザー）。シンタックスハ
 ```
 
 **重要**: このファイルは外部から動的に読み込まれます。変更すれば即座にエディタに反映されます。
+
+---
+
+### 8. `cli/validate.js`
+
+Node.js環境でスクリプトをバリデーションするCLIツール。CI/CD統合用。
+
+```bash
+# 使い方
+npm run lint                    # spec/advance.gbs を検証
+npm run lint path/to/file.gbs  # 指定ファイルを検証
+node cli/validate.js *.gbs      # 複数ファイルを検証
+```
+
+#### 特徴
+
+- カラー出力（エラー=赤、警告=黄、成功=緑）
+- エラーがあれば終了コード1で終了（CI/CD対応）
+- `executes.json`を同期的に読み込み
+- `validateScriptCore()`を使用（環境非依存）
+
+---
+
+### 9. `spec/advance.gbs`
+
+全言語機能を網羅したテストスクリプト。バリデーション機能の動作確認用。
+
+```bash
+npm run lint spec/advance.gbs
+```
+
+#### カバー範囲
+
+- 全コマンド（DEFINE, PAGE, CHOICE, IS, TO, EXEC, RETURN, BACK, FLAG）
+- 条件式（true:, false:, true-or:, false-or:）
+- 効果（to-true:, to-false:）
+- 特殊キーワード（/SAME, /CANCEL, /TIMEUP）
+- メタコード（@^HERE, @^BACK）
+- 時間制限（time:）
+- 複数フラグ指定
+- 複雑な条件組み合わせ
 
 ---
 

@@ -128,8 +128,6 @@ export function createHoverProvider() {
 
       // 条件・効果キーワードをチェック
       const conditionEffectPatterns = [
-        { pattern: /mode:not\b/g, keyword: "mode:not" },
-        { pattern: /mode:(?!not)\b/g, keyword: "mode:" },
         { pattern: /(?<!to-)true:/g, keyword: "true:" },
         { pattern: /(?<!to-)false:/g, keyword: "false:" },
         { pattern: /true-or:/g, keyword: "true-or:" },

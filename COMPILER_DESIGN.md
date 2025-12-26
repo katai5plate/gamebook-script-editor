@@ -1,11 +1,15 @@
+# 注意
+
+これは設計時の仕様であり、実装とは異なります。
+
 # Gamebook Script Compiler 設計書
 
-このドキュメントは、Gamebookスクリプト言語からJSONへのコンパイラの設計仕様を定義します。
+このドキュメントは、Gamebook スクリプト言語から JSON へのコンパイラの設計仕様を定義します。
 
 ## 目次
 
 1. [概要](#概要)
-2. [出力JSON構造](#出力json構造)
+2. [出力 JSON 構造](#出力json構造)
 3. [コンパイラアーキテクチャ](#コンパイラアーキテクチャ)
 4. [実装の優先順位](#実装の優先順位)
 5. [C#側の実装例](#c側の実装例)
@@ -16,20 +20,20 @@
 
 ### 目的
 
-- Unity (C#) でシンプルに実装できるJSON形式を出力する
-- 将来的なMarkdown出力にも対応できる構造を維持する
+- Unity (C#) でシンプルに実装できる JSON 形式を出力する
+- 将来的な Markdown 出力にも対応できる構造を維持する
 - コンパイル時に可能な限り展開・最適化を行い、ランタイム処理を軽量化する
 
 ### 設計方針
 
 1. **シンプル第一**: C#で複雑な処理を書かなくて済む構造
-2. **配列ベース**: 条件やフラグは配列で表現し、LINQで処理しやすく
-3. **型安全**: JSONの各フィールドがC#のクラスに直接マッピング可能
+2. **配列ベース**: 条件やフラグは配列で表現し、LINQ で処理しやすく
+3. **型安全**: JSON の各フィールドが C#のクラスに直接マッピング可能
 4. **コンパイル時展開**: `/SAME` などの構文糖衣はコンパイル時に展開
 
 ---
 
-## 出力JSON構造
+## 出力 JSON 構造
 
 ### トップレベル
 
@@ -39,21 +43,26 @@
   "flags": ["key", "wasHighScore"],
   "startPage": "cave",
   "pages": {
-    "cave": { /* Page構造 */ },
-    "forest": { /* Page構造 */ }
+    "cave": {
+      /* Page構造 */
+    },
+    "forest": {
+      /* Page構造 */
+    }
   }
 }
 ```
 
 **フィールド:**
+
 - `name` (string): スクリプト名（DEFINE の引数）
 - `flags` (string[]): 宣言された全フラグのリスト
-- `startPage` (string): 開始ページ名（最初のPAGE）
+- `startPage` (string): 開始ページ名（最初の PAGE）
 - `pages` (object): ページ名をキーとしたページオブジェクトのマップ
 
 ---
 
-### Page構造
+### Page 構造
 
 ```json
 {
@@ -82,13 +91,14 @@
 ```
 
 **フィールド:**
-- `lines` (Line[]): ページ内の実行される行（テキスト、EXECコマンド）
-- `choice` (Choice | null): 選択肢（ない場合はnull）
-- `next` (Next): ページ終了後の動作（RETURN, BACK, TO, またはnull）
+
+- `lines` (Line[]): ページ内の実行される行（テキスト、EXEC コマンド）
+- `choice` (Choice | null): 選択肢（ない場合は null）
+- `next` (Next): ページ終了後の動作（RETURN, BACK, TO, または null）
 
 ---
 
-### Line構造
+### Line 構造
 
 #### テキスト行
 
@@ -101,11 +111,12 @@
 ```
 
 **フィールド:**
+
 - `type` (string): `"text"`
 - `content` (string): 表示するテキスト
 - `conditions` (Condition[]): 表示条件（オプション、空配列の場合は無条件）
 
-#### EXEC行
+#### EXEC 行
 
 ```json
 {
@@ -117,6 +128,7 @@
 ```
 
 **フィールド:**
+
 - `type` (string): `"exec"`
 - `command` (string): コマンド名（`#` なし）
 - `args` (string[]): 引数リスト（`"` や `$`, `@` はそのまま文字列として保持）
@@ -124,13 +136,14 @@
 
 ---
 
-### Condition構造
+### Condition 構造
 
 ```json
 { "type": "all_true", "flags": ["key", "torch"] }
 ```
 
 **フィールド:**
+
 - `type` (string): 条件タイプ
   - `"all_true"` - 全フラグが真（`true:$flag1,$flag2`）
   - `"all_false"` - 全フラグが偽（`false:$flag1,$flag2`）
@@ -142,23 +155,23 @@
 **`mode:not` の処理:**
 
 スクリプト:
+
 ```
 mode:not true:$hasKey> 鍵を持っていない
 ```
 
-JSON出力:
+JSON 出力:
+
 ```json
 {
   "type": "text",
   "content": "鍵を持っていない",
-  "conditions": [
-    { "type": "not" },
-    { "type": "all_true", "flags": ["hasKey"] }
-  ]
+  "conditions": [{ "type": "not" }, { "type": "all_true", "flags": ["hasKey"] }]
 }
 ```
 
 **C#での評価:**
+
 ```csharp
 // conditions配列の全てがtrueの場合に表示
 // "not"の場合は次の条件を反転
@@ -166,7 +179,7 @@ JSON出力:
 
 ---
 
-### Choice構造
+### Choice 構造
 
 ```json
 {
@@ -189,12 +202,13 @@ JSON出力:
 ```
 
 **フィールド:**
+
 - `time` (string | null): 制限時間（`"too_short"`, `"short"`, `"normal"`, `"long"`, `"too_long"` または null）
 - `options` (Option[]): 選択肢のリスト
 
 ---
 
-### Option構造
+### Option 構造
 
 ```json
 {
@@ -206,6 +220,7 @@ JSON出力:
 ```
 
 **フィールド:**
+
 - `text` (string): 選択肢のテキスト（`/SAME`, `/CANCEL`, `/TIMEUP` はコンパイル時に展開される）
 - `target` (string): 遷移先ページ名、または特殊値（`"^HERE"`, `"^BACK"`）
 - `conditions` (Condition[]): 選択肢の表示条件
@@ -214,12 +229,14 @@ JSON出力:
 **特殊キーワードの展開:**
 
 スクリプト:
+
 ```
 IS "扉を開ける" @win true:$key
 IS /SAME @locked false:$key
 ```
 
 コンパイル後:
+
 ```json
 [
   { "text": "扉を開ける", "target": "win", ... },
@@ -231,13 +248,14 @@ IS /SAME @locked false:$key
 
 ---
 
-### Effect構造
+### Effect 構造
 
 ```json
 { "type": "set_true", "flags": ["key", "hasItem"] }
 ```
 
 **フィールド:**
+
 - `type` (string): 効果タイプ
   - `"set_true"` - フラグを真にする（`to-true:$flag1,$flag2`）
   - `"set_false"` - フラグを偽にする（`to-false:$flag1,$flag2`）
@@ -245,7 +263,7 @@ IS /SAME @locked false:$key
 
 ---
 
-### Next構造
+### Next 構造
 
 ```json
 { "type": "return" }
@@ -263,11 +281,12 @@ IS /SAME @locked false:$key
 ```
 
 **フィールド:**
+
 - `type` (string): 遷移タイプ
   - `"return"` - 現在のページの先頭に戻る（RETURN）
   - `"back"` - 直前のページに戻る（BACK）
   - `"to"` - 指定ページへ遷移（TO）
-  - `null` - 何もしない（CHOICEで終了）
+  - `null` - 何もしない（CHOICE で終了）
 - `target` (string): 遷移先（`type`が`"to"`の場合のみ）
 - `conditions` (Condition[]): 遷移条件（`type`が`"to"`の場合のみ）
 - `effects` (Effect[]): 遷移時の効果（`type`が`"to"`の場合のみ）
@@ -308,33 +327,38 @@ JSON出力
 
 ### parser.js の責務
 
-1. **2パス方式**（validation.jsと同じ）
-   - 1パス目: DEFINE, FLAG, PAGE の収集
-   - 2パス目: 各ページの内容をパース
+1. **2 パス方式**（validation.js と同じ）
+
+   - 1 パス目: DEFINE, FLAG, PAGE の収集
+   - 2 パス目: 各ページの内容をパース
 
 2. **行の分類**
+
    - コマンド行（PAGE, CHOICE, IS, TO, EXEC, RETURN, BACK）
    - テキスト行（`>`, `-` で始まる行）
    - 条件付き行（`true:`, `false:` などで始まる行）
 
-3. **AST構築**
-   - ページごとにlines, choice, nextを抽出
+3. **AST 構築**
+
+   - ページごとに lines, choice, next を抽出
    - 条件・効果を構造化
 
 4. **特殊処理**
-   - `/SAME` を直前のISのテキストで置換
+   - `/SAME` を直前の IS のテキストで置換
    - テキストの継続行（`-`）を結合
 
 ---
 
 ### generator.js の責務
 
-1. **AST → JSON変換**
+1. **AST → JSON 変換**
+
    - 単純なオブジェクト変換（既に構造化済み）
 
 2. **型情報の付与**
-   - Conditionの `type` フィールドを生成
-   - Effectの `type` フィールドを生成
+
+   - Condition の `type` フィールドを生成
+   - Effect の `type` フィールドを生成
 
 3. **最適化**（オプション）
    - 空の配列を削除
@@ -345,9 +369,9 @@ JSON出力
 ### index.js (エントリポイント)
 
 ```javascript
-import { validateScript } from '../validation.js';
-import { parse } from './parser.js';
-import { generate } from './generator.js';
+import { validateScript } from "../validation.js";
+import { parse } from "./parser.js";
+import { generate } from "./generator.js";
 
 export function compile(scriptText) {
   // 1. バリデーション
@@ -377,24 +401,27 @@ class CompileError extends Error {
 
 ## 実装の優先順位
 
-### フェーズ1: 基本コンパイラ（最小限）
+### フェーズ 1: 基本コンパイラ（最小限）
 
-**目標**: シンプルなスクリプトをJSONに変換できる
+**目標**: シンプルなスクリプトを JSON に変換できる
 
 1. **parser.js**
+
    - DEFINE, FLAG のパース
    - PAGE の抽出
    - 単純なテキスト行（`>`, `-`）のパース
    - RETURN, BACK の処理
 
 2. **generator.js**
-   - 基本的なJSON出力
+
+   - 基本的な JSON 出力
 
 3. **動作確認**
-   - Runボタンでコンパイル実行
-   - コンソールにJSON出力
+   - Run ボタンでコンパイル実行
+   - コンソールに JSON 出力
 
 **テストケース:**
+
 ```
 DEFINE "test"
   FLAG $key
@@ -407,19 +434,21 @@ RETURN
 
 ---
 
-### フェーズ2: 選択肢の実装
+### フェーズ 2: 選択肢の実装
 
-**目標**: CHOICE/ISをサポート
+**目標**: CHOICE/IS をサポート
 
 1. **parser.js**
-   - CHOICE のパース（time指定含む）
+
+   - CHOICE のパース（time 指定含む）
    - IS のパース（テキスト、target、条件、効果）
    - `/SAME` の展開
 
 2. **generator.js**
-   - Choice, Option構造の生成
+   - Choice, Option 構造の生成
 
 **テストケース:**
+
 ```
 CHOICE
   IS "進む" @next
@@ -428,19 +457,21 @@ CHOICE
 
 ---
 
-### フェーズ3: 条件と効果
+### フェーズ 3: 条件と効果
 
 **目標**: 条件付きテキスト・選択肢、フラグ操作をサポート
 
 1. **parser.js**
+
    - 条件の解析（`true:`, `false:`, `true-or:`, `false-or:`, `mode:not`）
    - 効果の解析（`to-true:`, `to-false:`）
    - 条件付きテキスト行のパース
 
 2. **generator.js**
-   - Condition, Effect構造の生成
+   - Condition, Effect 構造の生成
 
 **テストケース:**
+
 ```
 true:$key> 鍵を持っている
 IS "鍵を拾う" @^HERE false:$key to-true:$key
@@ -448,32 +479,35 @@ IS "鍵を拾う" @^HERE false:$key to-true:$key
 
 ---
 
-### フェーズ4: EXEC と TO
+### フェーズ 4: EXEC と TO
 
 **目標**: 全機能をサポート
 
 1. **parser.js**
-   - EXEC コマンドのパース（executes.jsonから引数情報取得）
+
+   - EXEC コマンドのパース（executes.json から引数情報取得）
    - TO のパース（条件・効果付き遷移）
 
 2. **generator.js**
-   - Exec行の生成
-   - Next構造（to）の生成
+   - Exec 行の生成
+   - Next 構造（to）の生成
 
 ---
 
-### フェーズ5: UI統合
+### フェーズ 5: UI 統合
 
-1. **Runボタン機能**
+1. **Run ボタン機能**
+
    - エディタのテキストをコンパイル
-   - JSONをプレビュー画面に表示
+   - JSON をプレビュー画面に表示
 
 2. **ブラウザランタイム（ミニ実装）**
-   - JSONを読み込んでテストプレイを実行
+
+   - JSON を読み込んでテストプレイを実行
    - プレビュー画面で動作確認
 
 3. **フローチャート生成**
-   - JSON → Mermaid形式に変換
+   - JSON → Mermaid 形式に変換
    - フローチャート画面に表示
 
 ---
@@ -684,17 +718,17 @@ public void ExecutePage(Page page)
 ### 1. 文字列のエスケープ
 
 - テキスト内の `"` は `\"` としてエスケープする必要がある
-- JSONとして正しい形式を保つこと
+- JSON として正しい形式を保つこと
 
 ### 2. フラグ名・ページ名の正規化
 
 - スクリプトでは `$key`, `@cave` のように `$`, `@` 付き
-- JSON内では `"key"`, `"cave"` のように記号なし
+- JSON 内では `"key"`, `"cave"` のように記号なし
 
 ### 3. executes.json との連携
 
 - EXEC コマンドの引数型は executes.json から取得
-- 型情報はJSONに含めず、C#側でexecutes.jsonを読む設計も可能
+- 型情報は JSON に含めず、C#側で executes.json を読む設計も可能
 
 ### 4. エラーハンドリング
 
@@ -705,9 +739,9 @@ public void ExecutePage(Page page)
 
 ## 今後の拡張
 
-### Markdown出力
+### Markdown 出力
 
-JSONから以下の形式でMarkdownを生成:
+JSON から以下の形式で Markdown を生成:
 
 ```markdown
 # Gamebook: main
@@ -718,6 +752,7 @@ JSONから以下の形式でMarkdownを生成:
 鍵のかかった扉がある。
 
 **選択肢:**
+
 - 森へ出る → [forest](#forest)
 - 扉を開ける → [win](#win) (条件: key)
 - 扉を開ける → [locked](#locked) (条件: not key)
@@ -725,6 +760,7 @@ JSONから以下の形式でMarkdownを生成:
 ---
 
 ## ページ: forest
+
 ...
 ```
 

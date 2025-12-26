@@ -130,7 +130,7 @@ export function createCompletionProvider() {
       }
       // : または , を入力した場合、条件・効果キーワードの後ならフラグ補完
       else if (lastChar === ":" || lastChar === ",") {
-        const conditionEffectMatch = textBeforeCursor.match(/(mode:not|true:|false:|true-or:|false-or:|to-true:|to-false:)([^>\s]*,)*$/);
+        const conditionEffectMatch = textBeforeCursor.match(REGEX_PATTERNS.conditionEffectCompletionPattern);
         if (conditionEffectMatch) {
           // 既出のフラグ名を抽出
           const text = model.getValue();
@@ -170,18 +170,6 @@ export function createCompletionProvider() {
             });
           }
           return { suggestions };
-        }
-
-        // m と入力した場合、mode:not を優先的に表示
-        const wordMatch = textBeforeCursor.match(/(\S+)$/);
-        if (wordMatch && wordMatch[1] === "m") {
-          suggestions.push({
-            label: "mode:not",
-            kind: monaco.languages.CompletionItemKind.Keyword,
-            insertText: "mode:not",
-            detail: "条件反転",
-            sortText: "0", // 優先的に表示
-          });
         }
 
         // EXEC行で#コマンドの後の場合、引数補完を試みる

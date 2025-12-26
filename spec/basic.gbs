@@ -1,0 +1,36 @@
+DEFINE "main"
+  FLAG $key // 鍵を取得したか
+  FLAG $wasHighScore // ハイスコアになったか
+
+PAGE @cave
+EXEC #SET_BG "cave"
+> 暗い洞窟。
+- 鍵のかかった扉がある。
+CHOICE
+  IS "森へ出る" @forest
+  IS "扉を開ける" @win true:$key
+  IS /SAME @locked false:$key
+RETURN
+
+PAGE @forest
+EXEC #SET_BG "forest"
+> 森。
+false:$key- 地面に小さな鍵。
+CHOICE time:short
+  IS "鍵を拾う" @^HERE false:$key to-true:$key
+  IS "洞窟へ戻る" @^BACK
+RETURN
+
+PAGE @locked
+> 鍵がない。
+- 押しても引いても開かなかった。
+BACK
+
+PAGE @win
+> 鍵が回った。脱出成功！
+- ゲームクリア！
+EXEC #PLAY_SE "finish"
+EXEC #SAVE_CLEAR_TIME $wasHighScore
+true:$wasHighScore> クリア時間ハイスコア更新！
+- おめでとう！
+TO @^HERE to-false:$key,$wasHighScore

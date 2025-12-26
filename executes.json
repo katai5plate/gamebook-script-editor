@@ -6,7 +6,7 @@
         "require": true,
         "name": "name",
         "type": "text",
-        "presets": ["cave", "forest"]
+        "presets": ["cave", "forest", "title_screen", "mansion_outside", "entrance_hall", "library", "treasure_room", "upstairs_hall", "basement_stairs", "pitch_black", "basement", "boss_room", "final_room", "true_ending", "normal_ending", "game_over", "give_up"]
       }
     ]
   },
@@ -17,7 +17,7 @@
         "require": true,
         "name": "name",
         "type": "text",
-        "presets": ["finish"]
+        "presets": ["finish", "door_creak", "old_man_voice", "ominous_sound", "fire_ignite", "chest_open", "heavy_door", "stumble", "game_over", "wrong_buzzer", "mechanism", "door_unlock", "battle_start", "sword_slash", "enemy_defeated", "secret_found", "item_get", "fanfare", "ending_jingle"]
       },
       {
         "name": "volume",
@@ -27,7 +27,36 @@
     ]
   },
   {
+    "name": "PLAY_BGM",
+    "args": [
+      {
+        "require": true,
+        "name": "name",
+        "type": "text",
+        "presets": ["opening_theme", "tension_theme", "boss_theme", "ending_theme"]
+      }
+    ]
+  },
+  {
+    "name": "STOP_BGM",
+    "args": []
+  },
+  {
     "name": "SAVE_CLEAR_TIME",
     "args": [{ "name": "wasHighScore", "type": "flag" }]
+  },
+  {
+    "name": "UNLOCK_ACHIEVEMENT",
+    "args": [
+      {
+        "require": true,
+        "name": "achievement_id",
+        "type": "text"
+      }
+    ]
+  },
+  {
+    "name": "ROLL_CREDITS",
+    "args": []
   }
 ]

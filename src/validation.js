@@ -6,22 +6,58 @@ import {
   parseArgs,
 } from "./constants.js";
 
-// executes.jsonから有効なコマンドと定義を読み込む
+/**
+ * エラーの重大度レベル
+ * Monaco Editor の MarkerSeverity と互換性を持つ定数
+ *
+ * @see https://microsoft.github.io/monaco-editor/api/enums/monaco.MarkerSeverity.html
+ *
+ * Monaco.MarkerSeverity:
+ * - Hint = 1
+ * - Info = 2
+ * - Warning = 4
+ * - Error = 8
+ */
+export const Severity = {
+  /** 構文エラーやセマンティックエラー (monaco.MarkerSeverity.Error) */
+  Error: 8,
+  /** 警告レベルの問題 (monaco.MarkerSeverity.Warning) */
+  Warning: 4,
+  /** 情報メッセージ (monaco.MarkerSeverity.Info) */
+  Info: 2,
+  /** ヒントや提案 (monaco.MarkerSeverity.Hint) */
+  Hint: 1,
+};
+
+// executes.jsonから有効なコマンドと定義を読み込む（ブラウザ用）
 let validExecuteCommands = new Set();
 let executeDefinitions = [];
-fetch("../executes.json")
-  .then((res) => res.json())
-  .then((data) => {
-    validExecuteCommands = new Set(data.map((cmd) => cmd.name));
-    executeDefinitions = data;
-  })
-  .catch((err) => console.warn("Failed to load executes.json:", err));
+if (typeof window !== "undefined") {
+  fetch("../executes.json")
+    .then((res) => res.json())
+    .then((data) => {
+      validExecuteCommands = new Set(data.map((cmd) => cmd.name));
+      executeDefinitions = data;
+    })
+    .catch((err) => console.warn("Failed to load executes.json:", err));
+}
 
-function validateScript(text) {
+/**
+ * スクリプトをバリデーションする（コア関数）
+ * @param {string} text - バリデーション対象のスクリプト
+ * @param {object} options - オプション
+ * @param {Array} options.executeCommands - 利用可能なEXECコマンドの定義
+ * @returns {Array} エラーの配列
+ */
+function validateScriptCore(text, options = {}) {
   const errors = [];
   const lines = text.split("\n");
   const declaredPages = new Set();
   const declaredFlags = new Set();
+
+  // オプションから実行コマンド定義を取得（未指定の場合はグローバル変数を使用）
+  const execCommands = options.executeCommands || executeDefinitions;
+  const execCommandNames = new Set(execCommands.map((cmd) => cmd.name));
 
   function addError(lineNum, startCol, endCol, message, severity) {
     if (typeof lineNum !== "number" || lineNum < 1) return;
@@ -31,8 +67,7 @@ function validateScript(text) {
     if (isNaN(lineNum) || isNaN(startCol) || isNaN(endCol)) return;
 
     errors.push({
-      startLineNumber: lineNum,
-      endLineNumber: lineNum,
+      line: lineNum,
       startColumn: startCol,
       endColumn: endCol,
       message: message,
@@ -52,7 +87,7 @@ function validateScript(text) {
       if (!cmdMatch) return;
 
       const cmdName = cmdMatch[1];
-      const cmdDef = executeDefinitions.find((cmd) => cmd.name === cmdName);
+      const cmdDef = execCommands.find((cmd) => cmd.name === cmdName);
       if (!cmdDef || !cmdDef.args) return;
 
       const cmdArgs = args.slice(1);
@@ -64,7 +99,7 @@ function validateScript(text) {
           cmdPos + 1,
           cmdPos + cmdName.length + 2,
           `${cmdName}の引数は最大${cmdDef.args.length}個です`,
-          monaco.MarkerSeverity.Warning
+          Severity.Warning
         );
       }
 
@@ -79,7 +114,7 @@ function validateScript(text) {
             cmdPos + 1,
             cmdPos + cmdName.length + 2,
             `${cmdName}の引数 ${argDef.name} が必要です`,
-            monaco.MarkerSeverity.Warning
+            Severity.Warning
           );
           continue;
         }
@@ -97,7 +132,7 @@ function validateScript(text) {
               argPos + 1,
               argPos + argValue.length + 1,
               `EXEC引数は@ページ, $フラグ, "テキスト"のいずれかである必要があります`,
-              monaco.MarkerSeverity.Warning
+              Severity.Warning
             );
           }
 
@@ -108,7 +143,7 @@ function validateScript(text) {
               argPos + 1,
               argPos + argValue.length + 1,
               `引数 ${argDef.name} はフラグ($で始まる)である必要があります`,
-              monaco.MarkerSeverity.Warning
+              Severity.Warning
             );
           }
 
@@ -119,7 +154,7 @@ function validateScript(text) {
               argPos + 1,
               argPos + argValue.length + 1,
               `引数 ${argDef.name} はテキスト("で囲む)である必要があります`,
-              monaco.MarkerSeverity.Warning
+              Severity.Warning
             );
           }
         }
@@ -135,7 +170,7 @@ function validateScript(text) {
         cmdPos + 1,
         cmdPos + command.length + 1,
         `${command}に引数は指定できません`,
-        monaco.MarkerSeverity.Warning
+        Severity.Warning
       );
       return;
     }
@@ -157,7 +192,7 @@ function validateScript(text) {
           cmdPos + 1,
           cmdPos + command.length + 1,
           message,
-          monaco.MarkerSeverity.Error
+          Severity.Error
         );
       }
     }
@@ -179,7 +214,7 @@ function validateScript(text) {
             argPos + 1,
             argPos + arg.length + 1,
             `${command}の引数が多すぎます`,
-            monaco.MarkerSeverity.Error
+            Severity.Error
           );
           continue;
         }
@@ -208,7 +243,7 @@ function validateScript(text) {
           argPos + 1,
           argPos + arg.length + 1,
           message,
-          monaco.MarkerSeverity.Error
+          Severity.Error
         );
       }
     }
@@ -216,7 +251,7 @@ function validateScript(text) {
 
   // 1行目DEFINEチェック
   if (lines.length > 0 && !lines[0].trim().startsWith("DEFINE")) {
-    addError(1, 1, 2, "1行目にDEFINEが必要です", monaco.MarkerSeverity.Error);
+    addError(1, 1, 2, "1行目にDEFINEが必要です", Severity.Error);
   }
 
   // DEFINE重複チェック
@@ -232,7 +267,7 @@ function validateScript(text) {
           definePos + 1,
           definePos + 7,
           "DEFINEは1度しか書けません",
-          monaco.MarkerSeverity.Error
+          Severity.Error
         );
       }
     }
@@ -253,7 +288,7 @@ function validateScript(text) {
           pagePos + 1,
           pagePos + pageName.length + 2,
           `重複したページ宣言: ${pageName}`,
-          monaco.MarkerSeverity.Error
+          Severity.Error
         );
       }
       declaredPages.add(pageName);
@@ -269,7 +304,7 @@ function validateScript(text) {
           flagPos + 1,
           flagPos + flagName.length + 2,
           `重複したフラグ宣言: ${flagName}`,
-          monaco.MarkerSeverity.Error
+          Severity.Error
         );
       }
       declaredFlags.add(flagName);
@@ -334,7 +369,7 @@ function validateScript(text) {
               `${command}の前の行は${rule.requiresPrevious.join(
                 "か"
               )}でなければなりません`,
-              monaco.MarkerSeverity.Error
+              Severity.Error
             );
           }
         }
@@ -360,7 +395,7 @@ function validateScript(text) {
             match.index + 1,
             match.index + match[0].length + 1,
             `未定義のページ: ${pageName}`,
-            monaco.MarkerSeverity.Error
+            Severity.Error
           );
         }
       }
@@ -376,7 +411,7 @@ function validateScript(text) {
           metaPos + 1,
           metaPos + metaCodeMatch[0].length + 1,
           `PAGE宣言では@^${metaCodeMatch[1]}は使用できません`,
-          monaco.MarkerSeverity.Error
+          Severity.Error
         );
       }
     }
@@ -393,7 +428,7 @@ function validateScript(text) {
             match.index + 1,
             match.index + match[0].length + 1,
             `未定義のフラグ: ${flagName}`,
-            monaco.MarkerSeverity.Error
+            Severity.Error
           );
         }
       }
@@ -405,15 +440,44 @@ function validateScript(text) {
       if (!match || !match[1] || typeof match.index !== "number") continue;
       const cmdName = match[1];
 
-      if (validExecuteCommands.size > 0 && !validExecuteCommands.has(cmdName)) {
+      if (execCommandNames.size > 0 && !execCommandNames.has(cmdName)) {
         addError(
           i + 1,
           match.index + 1,
           match.index + match[0].length + 1,
           `未定義のコマンド: ${cmdName}`,
-          monaco.MarkerSeverity.Error
+          Severity.Error
         );
       }
+    }
+
+    // 不正な条件・効果のカンマ連結チェック
+    // 例: true:$a,true:$b は NG (正: true:$a,$b または true:$a true:$b)
+    const invalidConditionPattern = /(?:true|false|true-or|false-or):[\$a-zA-Z0-9_,]+,(?:true|false|true-or|false-or):/;
+    const invalidEffectPattern = /(?:to-true|to-false):[\$a-zA-Z0-9_,]+,(?:to-true|to-false):/;
+
+    const invalidCondMatch = originalLine.match(invalidConditionPattern);
+    if (invalidCondMatch) {
+      const invalidPos = originalLine.indexOf(invalidCondMatch[0]);
+      addError(
+        i + 1,
+        invalidPos + 1,
+        invalidPos + invalidCondMatch[0].length + 1,
+        "条件はカンマで連結できません。スペース区切りか、1つの条件に複数フラグをまとめてください",
+        Severity.Error
+      );
+    }
+
+    const invalidEffMatch = originalLine.match(invalidEffectPattern);
+    if (invalidEffMatch) {
+      const invalidPos = originalLine.indexOf(invalidEffMatch[0]);
+      addError(
+        i + 1,
+        invalidPos + 1,
+        invalidPos + invalidEffMatch[0].length + 1,
+        "効果はカンマで連結できません。スペース区切りか、1つの効果に複数フラグをまとめてください",
+        Severity.Error
+      );
     }
 
     // 文脈依存チェック
@@ -425,7 +489,7 @@ function validateScript(text) {
         timePos + 1,
         timePos + timeMatch[0].length + 1,
         "time指定はCHOICE行でのみ有効です",
-        monaco.MarkerSeverity.Warning
+        Severity.Warning
       );
     }
 
@@ -439,13 +503,11 @@ function validateScript(text) {
           specialPos + 1,
           specialPos + specialMatch[0].length + 1,
           `${specialMatch[0]}はIS行でのみ有効です`,
-          monaco.MarkerSeverity.Warning
+          Severity.Warning
         );
       }
 
       const conditionPatterns = [
-        /mode:not/,
-        /(?<!to-)mode:/,
         /(?<!to-)true:/,
         /(?<!to-)false:/,
         /true-or:/,
@@ -456,7 +518,7 @@ function validateScript(text) {
         line.startsWith("IS") ||
         line.startsWith("TO") ||
         line.match(
-          /^(mode:|true:|false:|true-or:|false-or:|mode:not|to-true:|to-false:)/
+          /^(true:|false:|true-or:|false-or:|to-true:|to-false:)/
         ) ||
         originalLine.match(/^[>\-]/);
 
@@ -469,7 +531,7 @@ function validateScript(text) {
             condPos + 1,
             condPos + condMatch[0].length + 1,
             "条件指定はIS/TO/テキスト行でのみ有効です",
-            monaco.MarkerSeverity.Warning
+            Severity.Warning
           );
         }
       }
@@ -487,7 +549,7 @@ function validateScript(text) {
             effectPos + 1,
             effectPos + effectMatch[0].length + 1,
             "効果指定はIS/TO行でのみ有効です",
-            monaco.MarkerSeverity.Warning
+            Severity.Warning
           );
         }
       }
@@ -497,4 +559,23 @@ function validateScript(text) {
   return errors;
 }
 
-export { validateScript };
+/**
+ * Monaco Editor用のバリデーション関数（後方互換性）
+ * @param {string} text - バリデーション対象のスクリプト
+ * @returns {Array} Monaco形式のエラー配列
+ */
+function validateScript(text) {
+  const errors = validateScriptCore(text);
+
+  // Monacoの形式に変換
+  return errors.map((err) => ({
+    startLineNumber: err.line,
+    endLineNumber: err.line,
+    startColumn: err.startColumn,
+    endColumn: err.endColumn,
+    message: err.message,
+    severity: err.severity,
+  }));
+}
+
+export { validateScript, validateScriptCore };

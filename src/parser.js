@@ -1,8 +1,8 @@
-import { KEYWORD_MAP } from "./constants.js";
+import { KEYWORD_MAP, REGEX_PATTERNS } from "./constants.js";
 
 const tokenizeLine = (line) => {
   const tokens = [];
-  const regex = /"[^"]*"|[^\s]+/g;
+  const regex = REGEX_PATTERNS.tokenizePattern;
   let match;
   while ((match = regex.exec(line)) !== null) {
     let token = match[0];
@@ -49,12 +49,12 @@ export const parser = () => {
       const trimmed = line.trim().replace(/\/\/.*?$/, "");
       const [, isMessage] = trimmed.match(/^([>-])/) ?? [];
       const [, isMessageWithCondition] =
-        trimmed.match(/^[a-zA-Z0-9_$-\s:]+?([>-])/) ?? [];
+        trimmed.match(REGEX_PATTERNS.messageWithConditionPattern) ?? [];
       if (isMessage || isMessageWithCondition) {
-        const [left, right = ""] = trimmed.split(/[>-]\s?/);
+        const [left, right = ""] = trimmed.split(/[>-]\s/);
         return [
           isMessage || isMessageWithCondition,
-          ...left.split(/\s/).filter((cond) => cond !== "" || cond.length),
+          ...tokenizeLine(left),
           `"${right}`,
         ];
       }
@@ -94,7 +94,10 @@ export const parser = () => {
               return {
                 type: "condition",
                 formula,
-                flags: flags.split(",").map((flag) => flag.slice(1)),
+                flags: flags
+                  .replace(">", "")
+                  .split(",")
+                  .map((flag) => flag.slice(1)),
               };
             }
             if (KEYWORD_MAP.EFFECT.includes(token.replace(/:.*?$/, ":"))) {
@@ -109,8 +112,9 @@ export const parser = () => {
               const [, value] = token.split(":");
               return { type: "time", value };
             }
-            if ([">", "-"].includes(token))
+            if ([">", "-"].includes(token)) {
               return { type: "line", isFirst: token === ">" };
+            }
             return { type: "other", value: token };
           }
         }
@@ -154,7 +158,10 @@ export const parser = () => {
       const head = list[0];
       switch (head.value) {
         case "TO":
-          return gotoTokenListToCommandItem(list);
+          return {
+            type: "goto",
+            ...gotoTokenListToCommandItem(list),
+          };
         case "EXEC":
           return {
             type: "exec",
@@ -202,6 +209,10 @@ export const parser = () => {
                   };
                 }),
               };
+            }
+            default: {
+              console.warn("parse error:", list);
+              return { type: "parse-error", list };
             }
           }
         }

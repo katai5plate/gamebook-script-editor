@@ -1,48 +1,3 @@
-# デバッグシナリオ - 全構文テスト用ゲーム
-
-このシナリオは、Gamebook スクリプト言語のすべての構文機能を網羅的にテストするために設計されています。
-実際のゲームロジックとして動作しながら、コンパイラの全機能を検証できます。
-
-## 使用される構文機能のチェックリスト
-
-- [x] DEFINE - メイン定義
-- [x] FLAG - フラグ定義（複数）
-- [x] PAGE - 通常ページ
-- [x] CHOICE - 選択肢ブロック
-- [x] IS - 通常選択肢
-- [x] TO - 状態変更選択肢
-- [x] /SAME - 同一選択肢テキスト省略
-- [x] /CANCEL - キャンセル選択肢
-- [x] /TIMEUP - タイムアップ選択肢
-- [x] EXEC - エンジンコマンド実行
-- [x] RETURN - 選択肢へ戻る
-- [x] BACK - 前のページへ戻る
-- [x] @^HERE - 現在ページ再表示
-- [x] @^BACK - 前のページへ戻る（メタコード）
-- [x] true: - 単一フラグ真条件
-- [x] false: - 単一フラグ偽条件
-- [x] true:$flag1,$flag2 - 複数フラグ真条件（AND）
-- [x] false:$flag1,$flag2 - 複数フラグ偽条件（AND）
-- [x] true-or:$flag1,$flag2 - 複数フラグ真条件（OR）
-- [x] false-or:$flag1,$flag2 - 複数フラグ偽条件（OR）
-- [x] mode: - 通常モード条件
-- [x] mode:not - モード否定条件
-- [x] to-true: - 単一フラグ真化
-- [x] to-false: - 単一フラグ偽化
-- [x] to-true:$flag1,$flag2 - 複数フラグ真化
-- [x] to-false:$flag1,$flag2 - 複数フラグ偽化
-- [x] time:too_short - 超短時間制限
-- [x] time:short - 短時間制限
-- [x] time:normal - 通常時間制限
-- [x] time:long - 長時間制限
-- [x] time:too_long - 超長時間制限
-- [x] > テキストマーカー（条件付き含む）
-- [x] - テキスト継続（条件付き含む）
-- [x] すべての EXEC コマンド（executes.json より）
-
----
-
-```gamebook
 DEFINE "main"
   // ========================================
   // フラグ定義 - 全フラグタイプを網羅
@@ -62,7 +17,7 @@ DEFINE "main"
 
 
 // ========================================
-// エントリーポイント - 基本的な構文
+// エントリーポイント - EXEC命令のテスト
 // ========================================
 PAGE @start
 EXEC #SET_BG "title_screen"
@@ -78,6 +33,7 @@ RETURN
 
 // ========================================
 // 複数フラグOR条件のテスト (true-or:)
+// @^HERE と to-true: 効果のテスト
 // ========================================
 PAGE @outside_investigation
 EXEC #SET_BG "mansion_outside"
@@ -111,7 +67,7 @@ RETURN
 
 
 // ========================================
-// BACK命令のテスト
+// @^BACK メタコードのテスト
 // ========================================
 PAGE @outside_check
 > 本当に外に出るのか？
@@ -123,7 +79,8 @@ RETURN
 
 
 // ========================================
-// 複数フラグAND条件のテスト (true:)
+// 単一フラグ条件のテスト (true:, false:)
+// テキスト行での条件分岐テスト
 // ========================================
 PAGE @left_room
 EXEC #SET_BG "library"
@@ -139,23 +96,23 @@ RETURN
 
 
 // ========================================
-// TO命令と複数フラグ真化のテスト
+// 複数フラグ効果のテスト (to-true: 複数フラグ指定)
+// IS行での条件付き選択肢テスト
 // ========================================
 PAGE @talk_to_old_man
 EXEC #PLAY_SE "old_man_voice"
 > 老人「よく来たな。この洋館の秘密を知りたいか？」
 CHOICE
-  IS "話を聞く" @old_man_story to-true:$metOldMan,to-true:$heardRumor
+  IS "話を聞く" @old_man_story to-true:$metOldMan,$heardRumor
   IS "無視して去る" @left_room to-true:$metOldMan
 RETURN
 
 
 // ========================================
-// mode:条件のテスト
+// 老人の話を聞く
 // ========================================
 PAGE @old_man_story
-mode:tutorial> 老人「チュートリアルモードだな。詳しく説明しよう。」
-mode:not tutorial> 老人「この洋館には古い呪いがかかっている。」
+> 老人「この洋館には古い呪いがかかっている。」
 - 老人「地下には秘密の部屋がある。」
 - 老人「鍵と松明があれば、そこに辿り着けるだろう。」
 CHOICE
@@ -165,6 +122,7 @@ RETURN
 
 // ========================================
 // 時間制限付き選択肢のテスト (time:)
+// /CANCEL, /TIMEUP のテスト
 // ========================================
 PAGE @examine_books
 > 本棚を調べる。どの本を読もう？
@@ -179,6 +137,10 @@ CHOICE time:long
 RETURN
 
 
+// ========================================
+// 複数条件の組み合わせテスト
+// 条件付きIS行とフラグ効果の組み合わせ
+// ========================================
 PAGE @red_book
 > 赤い本「火の魔法について」
 - 松明に火を灯す呪文が書かれている。
@@ -197,7 +159,7 @@ RETURN
 
 
 PAGE @green_book
-> 緑い本「洋館の歴史」
+> 緑の本「洋館の歴史」
 - この洋館は100年前に建てられたらしい。
 CHOICE
   IS "戻る" @examine_books
@@ -238,14 +200,15 @@ RETURN
 
 
 // ========================================
-// 複数フラグAND条件と複数フラグ偽化のテスト
+// 複数フラグAND条件のテスト (true: 複数フラグ指定)
+// テキスト行での複数フラグ条件
 // ========================================
 PAGE @right_room
 EXEC #SET_BG "treasure_room"
 > 宝物室のような部屋。
 - 中央に鍵のかかった宝箱がある。
 false:$hasKey- 壁に古びた鍵が掛かっている。
-true:$hasKey,true:$doorUnlocked> 開けた宝箱が空っぽで置かれている。
+true:$hasKey,$doorUnlocked> 開けた宝箱が空っぽで置かれている。
 CHOICE
   IS "鍵を取る" @^HERE false:$hasKey to-true:$hasKey
   IS "宝箱を開ける" @open_chest true:$hasKey false:$doorUnlocked
@@ -265,13 +228,14 @@ RETURN
 
 // ========================================
 // 複数フラグOR条件（false-or:）のテスト
+// 複数フラグAND条件との対比
 // ========================================
 PAGE @upstairs
 EXEC #SET_BG "upstairs_hall"
 > 2階の廊下。
 - 長い廊下の奥に扉が見える。
 false-or:$hasKey,$hasTorch> まだ準備が足りない気がする...
-true:$hasKey,true:$hasTorch> 鍵と松明を持っている。準備は万端だ。
+true:$hasKey,$hasTorch> 鍵と松明を持っている。準備は万端だ。
 CHOICE
   IS "奥の扉を開ける" @locked_door false:$doorUnlocked
   IS "奥の扉を開ける" @basement_entrance true:$doorUnlocked
@@ -279,6 +243,9 @@ CHOICE
 RETURN
 
 
+// ========================================
+// BACK 命令のテスト
+// ========================================
 PAGE @locked_door
 > 扉には鍵穴があるが、開け方がわからない。
 - 何か情報が必要だ。
@@ -286,7 +253,8 @@ BACK
 
 
 // ========================================
-// 複数EXEC命令のテスト
+// 連続EXEC命令のテスト
+// 複数フラグ条件の組み合わせ
 // ========================================
 PAGE @basement_entrance
 EXEC #STOP_BGM
@@ -315,7 +283,8 @@ RETURN
 
 
 // ========================================
-// /SAME命令のテスト
+// /SAME 特殊選択肢のテスト
+// 同じテキストを持つ選択肢の簡略記法
 // ========================================
 PAGE @basement
 EXEC #SET_BG "basement"
@@ -360,7 +329,7 @@ RETURN
 
 
 // ========================================
-// すべての条件タイプの組み合わせテスト
+// フラグ状態による分岐テスト
 // ========================================
 PAGE @boss_room
 EXEC #SET_BG "boss_room"
@@ -375,10 +344,13 @@ CHOICE
 RETURN
 
 
+// ========================================
+// 時間制限付き選択肢のテスト
+// /TIMEUP のテスト
+// ========================================
 PAGE @boss_fight
 EXEC #PLAY_SE "battle_start"
-mode:easy> 影の攻撃は緩慢だ。簡単に避けられる。
-mode:not easy> 影の攻撃は素早い！慎重に戦わなければ。
+> 影の攻撃は素早い！慎重に戦わなければ。
 > 戦闘開始！
 CHOICE time:normal
   IS "攻撃する" @boss_attack
@@ -387,9 +359,12 @@ CHOICE time:normal
 RETURN
 
 
+// ========================================
+// 3つ以上のフラグAND条件のテスト
+// ========================================
 PAGE @boss_attack
 EXEC #PLAY_SE "sword_slash"
-true:$hasKey,true:$torchLit,true:$solvedPuzzle> 完璧な準備が功を奏した！
+true:$hasKey,$torchLit,$solvedPuzzle> 完璧な準備が功を奏した！
 - 渾身の一撃が影を貫いた！
 EXEC #PLAY_SE "enemy_defeated"
 CHOICE
@@ -415,18 +390,19 @@ RETURN
 
 
 // ========================================
-// 隠し要素テスト（複雑な条件組み合わせ）
+// 複数フラグの複雑な条件組み合わせテスト
+// 3つのフラグAND条件 + 個別フラグ条件
 // ========================================
 PAGE @final_room
 EXEC #SET_BG "final_room"
 EXEC #STOP_BGM
 EXEC #PLAY_BGM "ending_theme"
 > 最奥の部屋。美しい宝石が台座に置かれている。
-true:$hasMap,true:$metOldMan,true:$heardRumor> 地図と老人の話を思い出す。
+true:$hasMap,$metOldMan,$heardRumor> 地図と老人の話を思い出す。
 - 台座の周りを調べると、隠しスイッチを発見した！
 false:$hasMap- 特に何も見つからない。
 CHOICE
-  IS "隠しスイッチを押す" @secret_room true:$hasMap,true:$metOldMan
+  IS "隠しスイッチを押す" @secret_room true:$hasMap,$metOldMan
   IS "宝石を取る" @take_treasure
 RETURN
 
@@ -449,7 +425,8 @@ RETURN
 
 
 // ========================================
-// エンディング分岐（全フラグ評価）
+// TRUE ENDING - 複数EXEC命令とフラグ引数
+// 大量フラグのリセット効果テスト
 // ========================================
 PAGE @true_ending
 EXEC #STOP_BGM
@@ -467,6 +444,9 @@ CHOICE
 RETURN
 
 
+// ========================================
+// NORMAL ENDING - 条件分岐テスト
+// ========================================
 PAGE @normal_ending
 EXEC #STOP_BGM
 EXEC #PLAY_SE "ending_jingle"
@@ -482,6 +462,9 @@ CHOICE
 RETURN
 
 
+// ========================================
+// BAD ENDING - 準備不足
+// ========================================
 PAGE @bad_ending_fall
 EXEC #SET_BG "game_over"
 > 暗闇で転倒し、意識を失った...
@@ -492,6 +475,9 @@ CHOICE
 RETURN
 
 
+// ========================================
+// BAD ENDING - 戦闘敗北
+// ========================================
 PAGE @bad_ending_timeout
 EXEC #SET_BG "game_over"
 > 力尽きて倒れてしまった...
@@ -502,6 +488,9 @@ CHOICE
 RETURN
 
 
+// ========================================
+// BAD ENDING - 探索放棄
+// ========================================
 PAGE @give_up_ending
 EXEC #SET_BG "give_up"
 > 洋館を後にした。
@@ -510,113 +499,3 @@ EXEC #SET_BG "give_up"
 CHOICE
   IS "タイトルに戻る" @start
 RETURN
-```
-
-## 構文カバレッジ検証
-
-### 基本命令
-
-- ✅ `DEFINE "main"` - @start 前
-- ✅ `FLAG` - 12 個のフラグ定義
-- ✅ `PAGE` - 全ページ
-- ✅ `CHOICE` - 全選択肢ブロック
-- ✅ `IS` - 通常選択肢
-- ✅ `TO` - @talk_to_old_man
-- ✅ `EXEC` - 多数のページで使用
-- ✅ `RETURN` - 全ページ終端
-- ✅ `BACK` - @locked_door
-
-### 特殊選択肢
-
-- ✅ `/SAME` - @basement
-- ✅ `/CANCEL` - @examine_books
-- ✅ `/TIMEUP` - @examine_books, @boss_fight
-
-### メタコード
-
-- ✅ `@^HERE` - @outside_investigation, @right_room
-- ✅ `@^BACK` - @outside_check, @entrance
-
-### 条件（単一フラグ）
-
-- ✅ `true:$flag` - 多数のページ
-- ✅ `false:$flag` - 多数のページ
-
-### 条件（複数フラグ AND）
-
-- ✅ `true:$flag1,$flag2` - @boss_attack, @final_room
-- ✅ `false:$flag1,$flag2` - （構文としてサポート）
-
-### 条件（複数フラグ OR）
-
-- ✅ `true-or:$flag1,$flag2` - @outside_investigation
-- ✅ `false-or:$flag1,$flag2` - @upstairs
-
-### モード条件
-
-- ✅ `mode:tutorial` - @old_man_story
-- ✅ `mode:not tutorial` - @old_man_story
-- ✅ `mode:easy` - @boss_fight
-- ✅ `mode:not easy` - @boss_fight
-
-### エフェクト（単一フラグ）
-
-- ✅ `to-true:$flag` - 多数のページ
-- ✅ `to-false:$flag` - エンディングページ
-
-### エフェクト（複数フラグ）
-
-- ✅ `to-true:$flag1,to-true:$flag2` - @talk_to_old_man
-- ✅ `to-false:$flag1,$flag2,$flag3,...` - 全エンディング
-
-### 時間指定
-
-- ✅ `time:too_short` - @examine_books (赤い本)
-- ✅ `time:short` - @examine_books (青い本)
-- ✅ `time:normal` - @examine_books (緑の本), @boss_fight
-- ✅ `time:long` - @examine_books (黄色い本)
-- ✅ `time:too_long` - @examine_books (黒い本)
-
-### テキスト表示
-
-- ✅ `>` - 全ページで使用
-- ✅ `-` - 全ページで使用
-- ✅ 条件付きテキスト - 多数のページ
-
-### EXEC コマンド（executes.json より）
-
-- ✅ `#SET_BG` - 多数のページ
-- ✅ `#PLAY_BGM` - @start, @basement_entrance, @boss_room, @final_room
-- ✅ `#STOP_BGM` - @entrance, @basement_entrance, @boss_room, @final_room, エンディング
-- ✅ `#PLAY_SE` - 多数のページ
-- ✅ `#SAVE_CLEAR_TIME` - @true_ending, @normal_ending
-- ✅ `#UNLOCK_ACHIEVEMENT` - @true_ending
-- ✅ `#ROLL_CREDITS` - @true_ending
-
-## テストシナリオの遊び方
-
-1. エディタに上記スクリプトを貼り付け
-2. コンパイラで JSON に変換
-3. Unity（または他のランタイム）で実行
-4. 以下のルートを試す:
-
-### ルート 1: TRUE ENDING
-
-1. 外を調べて地図と松明を入手
-2. 左の部屋で老人と会話
-3. 本棚で赤い本を読んで松明に着火
-4. 右の部屋で鍵を入手して宝箱を開ける
-5. 2 階に上がって地下へ
-6. パズルを解いてボス部屋へ
-7. ボスを倒す
-8. 隠しスイッチで秘宝入手
-
-### ルート 2: NORMAL ENDING
-
-- 隠しスイッチを見逃して普通の宝石だけ取る
-
-### ルート 3: BAD ENDING (複数)
-
-- 松明を灯さずに地下へ降りる
-- ボス戦でタイムアウト
-- 最初に探索を放棄する

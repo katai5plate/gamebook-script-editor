@@ -1,0 +1,17 @@
+{
+  "name": "gamebook-script-editor",
+  "version": "1.0.0",
+  "description": "Gamebook Script Editor with Monaco",
+  "type": "module",
+  "scripts": {
+    "lint": "node cli/validate.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gamebook",
+    "editor",
+    "monaco"
+  ],
+  "author": "",
+  "license": "MIT"
+}

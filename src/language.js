@@ -14,7 +14,7 @@ export const gamebookLanguageDefinition = {
       [/-/, "text-continue"],
       [/time:(too_short|short|normal|long|too_long)/, "time-spec"],
       [
-        /true:|false:|mode:not|mode:|to-true:|to-false:|true-or:|false-or:/,
+        /true:|false:|to-true:|to-false:|true-or:|false-or:/,
         "condition",
       ],
     ],

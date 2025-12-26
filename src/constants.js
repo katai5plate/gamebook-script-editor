@@ -50,7 +50,7 @@ export const ARG_TYPE_PATTERNS = {
   time: /^time:(too_short|short|normal|long|too_long)$/,
   text_or_special: /^("|\/SAME|\/CANCEL|\/TIMEUP)/,
   conditions_effects:
-    /^(mode:not|mode:|true:|false:|true-or:|false-or:|to-true:|to-false:)/,
+    /^(true:|false:|true-or:|false-or:|to-true:|to-false:)/,
 };
 
 // ホバードキュメント
@@ -149,18 +149,6 @@ export const HOVER_DOCS = {
   },
 
   // 条件
-  "mode:not": {
-    title: "mode:not",
-    description: "条件を反転します。後続の条件が偽の場合に真となります。",
-    syntax: "mode:not [conditions]",
-    example: "mode:not true:$hasKey> 鍵を持っていない",
-  },
-  "mode:": {
-    title: "mode:",
-    description: "条件モードを指定します(現在はnotのみ実装)。",
-    syntax: "mode:not",
-    example: "mode:not true:$flag",
-  },
   "true:": {
     title: "true:",
     description:
@@ -266,7 +254,7 @@ export const KEYWORD_MAP = {
   // 特殊キーワード
   SPECIAL: ["/SAME", "/CANCEL", "/TIMEUP"],
   // 条件
-  CONDITION: ["mode:not", "mode:", "true:", "false:", "true-or:", "false-or:"],
+  CONDITION: ["true:", "false:", "true-or:", "false-or:"],
   // 効果
   EFFECT: ["to-true:", "to-false:"],
   // 時間条件
@@ -293,6 +281,27 @@ export const REGEX_PATTERNS = {
   timeSpec: /time:(too_short|short|normal|long|too_long)/,
   specialChoice: /\/(SAME|CANCEL|TIMEUP)/,
   metaCode: /@\^(HERE|BACK)/,
+
+  // パーサー用：ハイフン付きキーワード（文字列として）
+  hyphenatedKeywords: "true-or|false-or|to-true|to-false",
+
+  // パーサー用：トークン化正規表現を生成するヘルパー
+  // 引用符、ハイフン付きキーワード、その他のトークン
+  get tokenizePattern() {
+    return new RegExp(`"[^"]*"|(?:${this.hyphenatedKeywords}):[^\\s>]*|[^\\s]+`, 'g');
+  },
+
+  // パーサー用：メッセージ行の条件部分マッチング
+  get messageWithConditionPattern() {
+    return new RegExp(`^(?:(?:${this.hyphenatedKeywords}):[^\\s>]+|[a-zA-Z0-9_$:\\s])+?([>-])`);
+  },
+
+  // 補完用：条件・効果キーワードの後にフラグを補完するためのパターン
+  get conditionEffectCompletionPattern() {
+    // KEYWORD_MAP.CONDITIONとEFFECTから全キーワードを取得
+    const allKeywords = [...KEYWORD_MAP.CONDITION, ...KEYWORD_MAP.EFFECT].join('|');
+    return new RegExp(`(${allKeywords})([^>\\s]*,)*$`);
+  },
 };
 
 // 共通ユーティリティ関数
