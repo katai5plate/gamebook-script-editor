@@ -1,8 +1,8 @@
 # Gamebook JSON Interface
 
-このドキュメントは、GamebookスクリプトからコンパイルされるJSON形式の型定義を記述します。
+このドキュメントは、Gamebook スクリプトからコンパイルされる JSON 形式の型定義を記述します。
 
-## TypeScript型定義
+## TypeScript 型定義
 
 ```ts
 /**
@@ -126,7 +126,9 @@ interface GotoCommand {
 interface PageEndCommand {
   type: "page-end";
   /** 終了モード */
-  mode: "return" | "back";
+  mode: "return" | "back" | "end";
+  /** 終了コード */
+  code?: string;
 }
 
 /**
@@ -161,7 +163,7 @@ interface Effect {
 }
 ```
 
-## JSON出力例
+## JSON 出力例
 
 以下は `democode.json` の実際の出力例です。
 
@@ -208,9 +210,7 @@ interface Effect {
             "page": "win",
             "noMove": false,
             "toBack": false,
-            "conditions": [
-              { "formula": "true", "flags": ["key"] }
-            ],
+            "conditions": [{ "formula": "true", "flags": ["key"] }],
             "effects": []
           },
           {
@@ -218,9 +218,7 @@ interface Effect {
             "page": "locked",
             "noMove": false,
             "toBack": false,
-            "conditions": [
-              { "formula": "false", "flags": ["key"] }
-            ],
+            "conditions": [{ "formula": "false", "flags": ["key"] }],
             "effects": []
           }
         ]
@@ -234,7 +232,7 @@ interface Effect {
 }
 ```
 
-### GotoCommand (TO命令) の例
+### GotoCommand (TO 命令) の例
 
 ```json
 {
@@ -252,7 +250,7 @@ interface Effect {
 }
 ```
 
-この例は `TO @^HERE to-false:$key,$wasHighScore` に対応するJSON出力です。
+この例は `TO @^HERE to-false:$key,$wasHighScore` に対応する JSON 出力です。
 
 ## Unity (C#) での利用
 
@@ -396,7 +394,7 @@ public class GamebookRunner
 
 ## 注意事項
 
-### GotoCommand（TO命令）の型判定
+### GotoCommand（TO 命令）の型判定
 
 `GotoCommand` は `type: "goto"` を持ちます:
 
@@ -416,10 +414,10 @@ if (command.type == "goto") {
 
 - `conditions` 配列内の条件はすべて AND で結合されます
 - 複数の `Condition` がある場合、すべてが真である必要があります
-- OR条件が必要な場合は `true-or:` または `false-or:` を使用します
+- OR 条件が必要な場合は `true-or:` または `false-or:` を使用します
 
 ### フラグ名の扱い
 
-- JSONに格納されるフラグ名には `$` プレフィックスが**含まれません**
-- 例: スクリプト上の `$key` → JSON上では `"key"`
+- JSON に格納されるフラグ名には `$` プレフィックスが**含まれません**
+- 例: スクリプト上の `$key` → JSON 上では `"key"`
 - ページ名も同様に `@` プレフィックスが除去されます

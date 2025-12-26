@@ -37,8 +37,7 @@ const gotoTokenListToCommandItem = (gtl) => {
   };
 };
 
-export const parser = () => {
-  const script = window.editor.getValue();
+export const parseScript = (script) => {
   const flagNames = new Set();
   const pageNames = new Set();
 
@@ -172,6 +171,12 @@ export const parser = () => {
           return { type: "page-end", mode: "return" };
         case "BACK":
           return { type: "page-end", mode: "back" };
+        case "END":
+          return {
+            type: "page-end",
+            mode: "end",
+            code: list.find((t) => t.type === "text")?.value ?? null,
+          };
         default: {
           switch (head.type) {
             case "line": {
@@ -227,4 +232,10 @@ export const parser = () => {
     pageNames: [...pageNames],
     pages,
   };
+};
+
+// ブラウザ版（window.editor使用）
+export const parser = () => {
+  const script = window.editor.getValue();
+  return parseScript(script);
 };

@@ -427,6 +427,7 @@ RETURN
 // ========================================
 // TRUE ENDING - 複数EXEC命令とフラグ引数
 // 大量フラグのリセット効果テスト
+// END命令（終了コード指定あり）
 // ========================================
 PAGE @true_ending
 EXEC #STOP_BGM
@@ -439,13 +440,12 @@ EXEC #SAVE_CLEAR_TIME $wasHighScore
 true:$wasHighScore> クリアタイムハイスコア更新！
 EXEC #UNLOCK_ACHIEVEMENT "true_ending"
 EXEC #ROLL_CREDITS
-CHOICE
-  IS "タイトルに戻る" @start to-false:$hasKey,$hasTorch,$hasMap,$doorUnlocked,$torchLit,$metOldMan,$heardRumor,$solvedPuzzle,$foughtBoss,$secretFound,$badEnding
-RETURN
+END "true_ending"
 
 
 // ========================================
 // NORMAL ENDING - 条件分岐テスト
+// END命令（終了コード指定あり）
 // ========================================
 PAGE @normal_ending
 EXEC #STOP_BGM
@@ -457,45 +457,40 @@ EXEC #SET_BG "normal_ending"
 true:$badEnding> （黒い本を読んだことが頭から離れない...）
 EXEC #SAVE_CLEAR_TIME $wasHighScore
 false:$wasHighScore> もっと早くクリアできたかもしれない。
-CHOICE
-  IS "タイトルに戻る" @start to-false:$hasKey,$hasTorch,$hasMap,$doorUnlocked,$torchLit,$metOldMan,$heardRumor,$solvedPuzzle,$foughtBoss,$secretFound,$badEnding
-RETURN
+END "normal_ending"
 
 
 // ========================================
 // BAD ENDING - 準備不足
+// END命令（終了コード指定あり）
 // ========================================
 PAGE @bad_ending_fall
 EXEC #SET_BG "game_over"
 > 暗闇で転倒し、意識を失った...
 - *** BAD ENDING: 準備不足 ***
 - 松明を灯してから来るべきだった。
-CHOICE
-  IS "タイトルに戻る" @start to-false:$hasKey,$hasTorch,$hasMap,$doorUnlocked,$torchLit,$metOldMan,$heardRumor,$solvedPuzzle,$foughtBoss,$secretFound,$badEnding
-RETURN
+END "bad_ending_fall"
 
 
 // ========================================
 // BAD ENDING - 戦闘敗北
+// END命令（終了コード指定あり）
 // ========================================
 PAGE @bad_ending_timeout
 EXEC #SET_BG "game_over"
 > 力尽きて倒れてしまった...
 - *** BAD ENDING: 戦闘敗北 ***
 - もっと効率的に戦うべきだった。
-CHOICE
-  IS "タイトルに戻る" @start to-false:$hasKey,$hasTorch,$hasMap,$doorUnlocked,$torchLit,$metOldMan,$heardRumor,$solvedPuzzle,$foughtBoss,$secretFound,$badEnding
-RETURN
+END "bad_ending_timeout"
 
 
 // ========================================
 // BAD ENDING - 探索放棄
+// END命令（終了コード省略）
 // ========================================
 PAGE @give_up_ending
 EXEC #SET_BG "give_up"
 > 洋館を後にした。
 - *** BAD ENDING: 探索放棄 ***
 - 何も得られなかった。
-CHOICE
-  IS "タイトルに戻る" @start
-RETURN
+END

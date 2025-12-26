@@ -37,6 +37,9 @@ export const SYNTAX_RULES = {
   BACK: {
     args: [],
   },
+  END: {
+    args: [{ type: "text", required: false }],
+  },
   FLAG: {
     args: [{ type: "flag", required: true, multiple: true }],
   },
@@ -98,6 +101,12 @@ export const HOVER_DOCS = {
     description: "直前のページの冒頭に戻ります。",
     syntax: "BACK",
     example: "BACK",
+  },
+  END: {
+    title: "END",
+    description: "スクリプトを終了し、エンジンに終了コードを渡します。",
+    syntax: 'END ["end_code"]',
+    example: 'END "happy_ending"\nEND "bad_ending"\nEND',
   },
   EXEC: {
     title: "EXEC",
@@ -248,6 +257,7 @@ export const KEYWORD_MAP = {
     "TO",
     "RETURN",
     "BACK",
+    "END",
     "DEFINE",
     "FLAG",
   ],
@@ -285,15 +295,20 @@ export const REGEX_PATTERNS = {
   // パーサー用：ハイフン付きキーワード（文字列として）
   hyphenatedKeywords: "true-or|false-or|to-true|to-false",
 
+  // パーサー用：全条件・効果キーワード（文字列として）
+  get allConditionEffectKeywords() {
+    return "true|false|true-or|false-or|to-true|to-false";
+  },
+
   // パーサー用：トークン化正規表現を生成するヘルパー
-  // 引用符、ハイフン付きキーワード、その他のトークン
+  // 引用符、条件・効果キーワード、その他のトークン
   get tokenizePattern() {
-    return new RegExp(`"[^"]*"|(?:${this.hyphenatedKeywords}):[^\\s>]*|[^\\s]+`, 'g');
+    return new RegExp(`"[^"]*"|(?:${this.allConditionEffectKeywords}):[^\\s>]*|[^\\s]+`, 'g');
   },
 
   // パーサー用：メッセージ行の条件部分マッチング
   get messageWithConditionPattern() {
-    return new RegExp(`^(?:(?:${this.hyphenatedKeywords}):[^\\s>]+|[a-zA-Z0-9_$:\\s])+?([>-])`);
+    return new RegExp(`^(?:(?:${this.allConditionEffectKeywords}):[^\\s>]+|[a-zA-Z0-9_$:\\s])+?([>-])`);
   },
 
   // 補完用：条件・効果キーワードの後にフラグを補完するためのパターン

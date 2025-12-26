@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "lint": "node cli/validate.js",
+    "parse": "node cli/parse.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

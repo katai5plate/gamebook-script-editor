@@ -3,7 +3,8 @@
     "allow": [
       "Bash(node:*)",
       "Bash(npm run lint:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm run parse:*)"
     ]
   }
 }

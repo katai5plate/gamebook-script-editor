@@ -31,11 +31,11 @@ BACK
 PAGE @treasure
 EXEC #PLAY_SE "finish"
 > 扉が開いた！宝物を手に入れた！
-RETURN
+END "treasure_ending"
 
 PAGE @end
 > 諦めて帰った...
-RETURN
+END "give_up"
 ```
 
 ---
@@ -57,6 +57,7 @@ CHOICE                                 // 選択肢
 TO @next_page                          // 自動遷移
 RETURN                                 // 現在ページの冒頭へ
 BACK                                   // 直前ページの冒頭へ
+END "end_code"                         // スクリプト終了（コードは任意）
 
 EXEC #COMMAND arg                      // エンジンコマンド実行
 ```
