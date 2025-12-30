@@ -51,13 +51,15 @@ export const parseScript = (script) => {
       const [, isMessageWithCondition] =
         trimmed.match(REGEX_PATTERNS.messageWithConditionPattern) ?? [];
 
-      // テキスト行の場合はコメントを除去しない
+      // テキスト行の場合
       if (isMessage || isMessageWithCondition) {
         const [left, right = ""] = trimmed.split(/[>-]\s/);
+        // メッセージ部分から途中コメントを除去
+        const messageText = right.replace(/\s*\/\/.*?$/, "");
         return [
           isMessage || isMessageWithCondition,
           ...tokenizeLine(left),
-          `"${right}`, // メッセージ部分は " で始まるので text として扱われる
+          `"${messageText}`, // メッセージ部分は " で始まるので text として扱われる
         ];
       }
 

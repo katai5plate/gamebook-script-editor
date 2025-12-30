@@ -1,0 +1,472 @@
+<div style="top:0px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      DEFINE
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      "main"
+    </span>
+  </span>
+</div>
+<div style="top:19px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;========================================
+    </span>
+  </span>
+</div>
+<div style="top:38px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;フラグ定義&nbsp;-&nbsp;全フラグタイプを網羅
+    </span>
+  </span>
+</div>
+<div style="top:57px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;========================================
+    </span>
+  </span>
+</div>
+<div style="top:76px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      FLAG
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $hasKey
+    </span>
+    <span class="mtk1">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;アイテム所持フラグ
+    </span>
+  </span>
+</div>
+<div style="top:95px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      FLAG
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $hasTorch
+    </span>
+    <span class="mtk1">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;アイテム所持フラグ
+    </span>
+  </span>
+</div>
+<div style="top:114px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      FLAG
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $hasMap
+    </span>
+    <span class="mtk1">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;アイテム所持フラグ
+    </span>
+  </span>
+</div>
+<div style="top:133px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      FLAG
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $doorUnlocked
+    </span>
+    <span class="mtk1">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;状態フラグ
+    </span>
+  </span>
+</div>
+<div style="top:152px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      FLAG
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $torchLit
+    </span>
+    <span class="mtk1">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;状態フラグ
+    </span>
+  </span>
+</div>
+<div style="top:171px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      FLAG
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $metOldMan
+    </span>
+    <span class="mtk1">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;イベントフラグ
+    </span>
+  </span>
+</div>
+<div style="top:190px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      FLAG
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $heardRumor
+    </span>
+    <span class="mtk1">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;イベントフラグ
+    </span>
+  </span>
+</div>
+<div style="top:209px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      FLAG
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $solvedPuzzle
+    </span>
+    <span class="mtk1">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;イベントフラグ
+    </span>
+  </span>
+</div>
+<div style="top:228px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      FLAG
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $foughtBoss
+    </span>
+    <span class="mtk1">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;戦闘フラグ
+    </span>
+  </span>
+</div>
+<div style="top:247px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      FLAG
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $wasHighScore
+    </span>
+    <span class="mtk1">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;スコアフラグ
+    </span>
+  </span>
+</div>
+<div style="top:266px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      FLAG
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $secretFound
+    </span>
+    <span class="mtk1">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;隠し要素フラグ
+    </span>
+  </span>
+</div>
+<div style="top:285px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      FLAG
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $badEnding
+    </span>
+    <span class="mtk1">
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;エンディングフラグ
+    </span>
+  </span>
+</div>
+<div style="top:304px;height:19px;" class="view-line">
+  <span>
+    <span>
+    </span>
+  </span>
+</div>
+<div style="top:323px;height:19px;" class="view-line">
+  <span>
+    <span>
+    </span>
+  </span>
+</div>
+<div style="top:342px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;========================================
+    </span>
+  </span>
+</div>
+<div style="top:361px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;エントリーポイント&nbsp;-&nbsp;EXEC命令のテスト
+    </span>
+  </span>
+</div>
+<div style="top:380px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;========================================
+    </span>
+  </span>
+</div>
+<div style="top:399px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      PAGE
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk20 mtkb" style="color: rgb(78, 201, 176);font-weight: bold;">
+      @start
+    </span>
+  </span>
+</div>
+<div style="top:418px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      EXEC
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk12" style="color: rgb(197, 134, 192);">
+      #SET_BG
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      "title_screen"
+    </span>
+  </span>
+</div>
+<div style="top:437px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      EXEC
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk12" style="color: rgb(197, 134, 192);">
+      #PLAY_BGM
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      "opening_theme"
+    </span>
+  </span>
+</div>
+<div style="top:456px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &gt;&nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      古びた洋館の前に立つあなた。
+    </span>
+  </span>
+</div>
+<div style="top:475px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      -&nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      雨が降りしきる中、不気味な雰囲気が漂っている。
+    </span>
+  </span>
+</div>
+<div style="top:494px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      -&nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      扉は半開きで、中から微かな光が漏れている。
+    </span>
+  </span>
+</div>
+<div style="top:513px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      CHOICE
+    </span>
+  </span>
+</div>
+<div style="top:532px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      IS
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      "洋館に入る"
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk20 mtkb" style="color: rgb(78, 201, 176);font-weight: bold;">
+      @entrance
+    </span>
+  </span>
+</div>
+<div style="top:551px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      IS
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      "周囲を調べる"
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk20 mtkb" style="color: rgb(78, 201, 176);font-weight: bold;">
+      @outside_investigation
+    </span>
+  </span>
+</div>

@@ -34,8 +34,16 @@ export const gamebookLanguageDefinition = {
 
     // テキスト行のメッセージ部分を処理する状態
     textLine: [
-      // メッセージテキスト全体を一度にマッチ（行末まで）
-      [/.*$/, "string", "@pop"],
+      // メッセージ+コメント全体を一度に処理（行末まで、貪欲マッチ）
+      [/.*$/, { token: "@rematch", next: "@textLineContent" }],
+    ],
+
+    // メッセージ内容を処理（コメント分離用）
+    textLineContent: [
+      // メッセージ + コメント（// が含まれる場合）
+      [/(.*)(\s*\/\/.*)$/, ["string", { token: "comment", next: "@popall" }]],
+      // メッセージのみ（コメントなし）
+      [/.*$/, { token: "string", next: "@popall" }],
     ],
   },
 };

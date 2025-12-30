@@ -1,0 +1,187 @@
+<div style="top:0px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      DEFINE
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      "test"
+    </span>
+  </span>
+</div>
+<div style="top:19px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &nbsp;&nbsp;
+    </span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      FLAG
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $a
+    </span>
+  </span>
+</div>
+<div style="top:38px;height:19px;" class="view-line">
+  <span>
+    <span>
+    </span>
+  </span>
+</div>
+<div style="top:57px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk9" style="color: rgb(86, 156, 214);">
+      PAGE
+    </span>
+    <span class="mtk1">
+      &nbsp;
+    </span>
+    <span class="mtk20 mtkb" style="color: rgb(78, 201, 176);font-weight: bold;">
+      @x
+    </span>
+  </span>
+</div>
+<div style="top:76px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;「IS&nbsp;"鍵を拾う"&nbsp;@^HERE&nbsp;false:$key&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      to-true:$key」がメッセージとして解釈されなければならない。
+    </span>
+  </span>
+</div>
+<div style="top:95px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &gt;&nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      IS&nbsp;"鍵を拾う"&nbsp;@^HERE&nbsp;false:$key&nbsp;to-true:$key
+    </span>
+  </span>
+</div>
+<div style="top:114px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      -&nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      IS&nbsp;"鍵を拾う"&nbsp;@^HERE&nbsp;false:$key&nbsp;to-true:$key
+    </span>
+  </span>
+</div>
+<div style="top:133px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk6" style="color: rgb(181, 206, 168);">
+      true-or:
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $a
+    </span>
+    <span class="mtk1">
+      &gt;&nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      IS&nbsp;"鍵を拾う"&nbsp;@^HERE&nbsp;false:$key&nbsp;to-true:$key
+    </span>
+  </span>
+</div>
+<div style="top:152px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk6" style="color: rgb(181, 206, 168);">
+      true-or:
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $a
+    </span>
+    <span class="mtk1">
+      -&nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      IS&nbsp;"鍵を拾う"&nbsp;@^HERE&nbsp;false:$key&nbsp;to-true:$key
+    </span>
+  </span>
+</div>
+<div style="top:171px;height:19px;" class="view-line">
+  <span>
+    <span>
+    </span>
+  </span>
+</div>
+<div style="top:190px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;途中コメントがテキストから除外されなければならない
+    </span>
+  </span>
+</div>
+<div style="top:209px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      &gt;&nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      IS&nbsp;"鍵を拾う"&nbsp;@^HERE&nbsp;false:$key&nbsp;to-true:$key&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;remove
+    </span>
+  </span>
+</div>
+<div style="top:228px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk1">
+      -&nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      IS&nbsp;"鍵を拾う"&nbsp;@^HERE&nbsp;false:$key&nbsp;to-true:$key&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;remove
+    </span>
+  </span>
+</div>
+<div style="top:247px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk6" style="color: rgb(181, 206, 168);">
+      true-or:
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $a
+    </span>
+    <span class="mtk1">
+      &gt;&nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      IS&nbsp;"鍵を拾う"&nbsp;@^HERE&nbsp;false:$key&nbsp;to-true:$key&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;remove
+    </span>
+  </span>
+</div>
+<div style="top:266px;height:19px;" class="view-line">
+  <span>
+    <span class="mtk6" style="color: rgb(181, 206, 168);">
+      true-or:
+    </span>
+    <span class="mtk13" style="color: rgb(220, 220, 170);">
+      $a
+    </span>
+    <span class="mtk1">
+      -&nbsp;
+    </span>
+    <span class="mtk5" style="color: rgb(206, 145, 120);">
+      IS&nbsp;"鍵を拾う"&nbsp;@^HERE&nbsp;false:$key&nbsp;to-true:$key&nbsp;
+    </span>
+    <span class="mtk8 mtki" style="color: rgb(106, 153, 85);font-style: italic;">
+      //&nbsp;remove
+    </span>
+  </span>
+</div>

@@ -7,5 +7,9 @@ PAGE @x
 - IS "鍵を拾う" @^HERE false:$key to-true:$key
 true-or:$a> IS "鍵を拾う" @^HERE false:$key to-true:$key
 true-or:$a- IS "鍵を拾う" @^HERE false:$key to-true:$key
-true-or:$a> IS "鍵を拾う" @^HERE false:$key to-true:$key // これもコメントではなくメッセージ
-true-or:$a- IS "鍵を拾う" @^HERE false:$key to-true:$key // これもコメントではなくメッセージ
+
+// 途中コメントがテキストから除外されなければならない
+> IS "鍵を拾う" @^HERE false:$key to-true:$key // remove
+- IS "鍵を拾う" @^HERE false:$key to-true:$key // remove
+true-or:$a> IS "鍵を拾う" @^HERE false:$key to-true:$key // remove
+true-or:$a- IS "鍵を拾う" @^HERE false:$key to-true:$key // remove
